@@ -13,7 +13,7 @@
     "dev": "vite",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/groups.test.ts src/catalog.test.ts scripts/sync-catalog.test.mjs"
+    "test": "node --experimental-strip-types --test src/groups.test.ts src/catalog.test.ts src/editorial.test.ts scripts/sync-catalog.test.mjs"
   },
   "dependencies": {
     "three": "^0.170.0"

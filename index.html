@@ -3,100 +3,194 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Fernando Lizana · Universo de proyectos</title>
-    <meta name="description" content="Explora mis proyectos. Cada estrella, una idea hecha código.">
+    <title>Fernando Lizana · Observatorio</title>
+    <meta name="description" content="Construyo software. Automatizo su calidad. Ingeniería, QA automation y sistemas con IA.">
     <meta name="author" content="Fernando Lizana">
     <meta name="theme-color" content="#070b14">
-    <meta property="og:title" content="Fernando Lizana · Universo de proyectos">
-    <meta property="og:description" content="Explora mis proyectos. Cada estrella, una idea hecha código.">
+    <meta property="og:title" content="Fernando Lizana · Observatorio">
+    <meta property="og:description" content="Construyo software. Automatizo su calidad.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="./banner.png">
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@360;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,620&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/style.css">
   </head>
   <body>
-    <a class="skip" href="#lista">Ir a la lista de proyectos</a>
-    <div class="vignette" aria-hidden="true"></div>
-    <canvas id="galaxy" aria-hidden="true"></canvas>
-    <p id="hover-label" class="hover-label" role="tooltip" hidden></p>
-
-    <header class="top">
-      <div class="identity">
-        <a class="name" href="https://github.com/FernandoLizana">Fernando Lizana</a>
-        <p class="portfolio">Universo de proyectos</p>
-        <p class="tagline">Explora mis proyectos. Cada estrella, una idea hecha código.</p>
-      </div>
-      <div class="controls">
-        <div class="search">
-          <label class="sr" for="q">Buscar por nombre, descripción o topics</label>
-          <input id="q" type="search" placeholder="Buscar proyectos" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results">
-          <ul id="search-results" role="listbox" hidden></ul>
-        </div>
-        <details class="filters" id="filters">
-          <summary>Filtros</summary>
-          <div class="filters-body">
-            <fieldset>
-              <legend>Lenguaje</legend>
-              <div id="language-filters"></div>
-            </fieldset>
-            <label>
-              Bifurcaciones
-              <select id="fork-filter">
-                <option value="all">Todas</option>
-                <option value="only">Solo bifurcaciones</option>
-                <option value="hide">Ocultar bifurcaciones</option>
-              </select>
-            </label>
-            <label>
-              Archivados
-              <select id="archived-filter">
-                <option value="all">Todos</option>
-                <option value="only">Solo archivados</option>
-                <option value="hide">Ocultar archivados</option>
-              </select>
-            </label>
-          </div>
-        </details>
-        <button type="button" id="view-toggle" aria-pressed="false">Lista de proyectos</button>
-        <button type="button" id="motion" aria-pressed="true">Movimiento</button>
-        <button type="button" id="reset-view">Ver galaxia completa</button>
-        <p id="count" aria-live="polite">Cargando el catálogo…</p>
-      </div>
+    <a class="skip" href="#observatorio">Ir a los proyectos</a>
+    <header class="nav">
+      <a class="brand" href="#inicio">Fernando Lizana</a>
+      <nav aria-label="Secciones">
+        <a href="#observatorio">Proyectos</a>
+        <a href="#sobre">Sobre mí</a>
+        <a href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
     </header>
 
-    <aside id="legend" class="legend" aria-label="Leyenda de la galaxia">
-      <div id="legend-body"></div>
-      <p id="sync" class="sync"></p>
-    </aside>
-    <p id="empty" class="empty" hidden></p>
+    <main>
+      <section class="hero" id="inicio">
+        <div class="hero-copy">
+          <p class="kicker">Ingeniería · QA Automation · Sistemas con IA</p>
+          <h1>Construyo software. <span>Automatizo su calidad.</span></h1>
+          <p class="lede">Cada estrella es un repositorio público. La galaxia sirve para encontrarlos; la lista y las fichas explican qué hacen, con qué están hechos y dónde está el código.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#observatorio">Explorar proyectos</a>
+            <a class="btn btn-ghost" href="#destacados">Ver proyectos destacados</a>
+          </div>
+        </div>
 
-    <aside id="detail" class="detail" hidden aria-labelledby="detail-title">
+        <div class="stage" id="observatorio">
+          <div class="stage-frame">
+          <canvas id="galaxy" aria-hidden="true"></canvas>
+          <div id="star-labels" class="star-labels"></div>
+          <p id="hover-label" class="hover-label" role="tooltip" hidden></p>
+          <p id="empty" class="empty" hidden></p>
+
+          <section id="lista" class="list-view" hidden aria-labelledby="list-title">
+            <h2 id="list-title" tabindex="-1">Lista de proyectos</h2>
+            <p class="list-lead">Los mismos repositorios públicos, sin depender de WebGL.</p>
+            <p id="fallback-note" class="fallback" hidden></p>
+            <div id="list-items"></div>
+          </section>
+          </div>
+
+          <div class="dock">
+            <div class="search">
+              <label class="sr" for="q">Buscar por nombre, descripción o topics</label>
+              <input id="q" type="search" placeholder="Buscar proyectos" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results">
+              <ul id="search-results" role="listbox" hidden></ul>
+            </div>
+            <div class="dock-tools">
+              <div class="segmented" role="group" aria-label="Vista">
+                <button type="button" id="view-galaxy" aria-pressed="true">Galaxia</button>
+                <button type="button" id="view-toggle" aria-pressed="false">Lista</button>
+              </div>
+              <details class="pop" id="filters">
+                <summary>Filtros</summary>
+                <div class="pop-body">
+                  <fieldset>
+                    <legend>Lenguaje</legend>
+                    <div id="language-filters"></div>
+                  </fieldset>
+                  <label>
+                    Tipo
+                    <select id="fork-filter">
+                      <option value="all">Todos</option>
+                      <option value="only">Solo bifurcaciones</option>
+                      <option value="hide">Ocultar bifurcaciones</option>
+                    </select>
+                  </label>
+                  <label>
+                    Estado
+                    <select id="archived-filter">
+                      <option value="all">Todos</option>
+                      <option value="only">Solo archivados</option>
+                      <option value="hide">Ocultar archivados</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+              <details class="pop" id="help">
+                <summary>Ayuda</summary>
+                <div class="pop-body help-body">
+                  <div id="legend-body"></div>
+                  <p>Arrastra para girar. En un teléfono, pellizca para acercar. La rueda del mouse sigue desplazando la página.</p>
+                  <p>El color es el lenguaje principal. Una línea une repositorios con el mismo lenguaje: es una agrupación, no una dependencia.</p>
+                  <p>El polvo y las nebulosas no son repositorios. Un anillo marca una bifurcación; menos brillo, un repositorio archivado.</p>
+                  <p id="coverage"></p>
+                </div>
+              </details>
+              <button type="button" id="motion" aria-pressed="true">Pausar</button>
+              <button type="button" id="reset-view">Restablecer vista</button>
+              <p id="count" aria-live="polite">Cargando el catálogo…</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="band" id="destacados">
+        <div class="band-head">
+          <p class="kicker">Selección</p>
+          <h2>Proyectos destacados</h2>
+          <p>Los que hoy tienen documentación pública suficiente para contar qué problema atienden. El orden se edita en <code>public/editorial.json</code>.</p>
+        </div>
+        <div id="featured-grid" class="featured-grid"></div>
+      </section>
+
+      <section class="band" id="areas" aria-labelledby="areas-title">
+        <div class="band-head">
+          <p class="kicker">Oficio</p>
+          <h2 id="areas-title">Áreas de trabajo</h2>
+        </div>
+        <div class="area-grid">
+          <article>
+            <h3>QA y automatización</h3>
+            <p>Diseño comprobaciones y herramientas que muestran qué van a hacer antes de actuar. limpieza clasifica destinos regenerables y, por defecto, solo simula el borrado.</p>
+          </article>
+          <article>
+            <h3>Monitoreo y confiabilidad</h3>
+            <p>Espectro escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para revisar el intercambio completo.</p>
+          </article>
+          <article>
+            <h3>Aplicaciones e IA</h3>
+            <p>Impulso es una aplicación Android de frases en español, sin cuenta y sin conexión. Los sistemas con inteligencia artificial que publique en GitHub entrarán en esta misma galaxia.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="band about" id="sobre">
+        <div>
+          <p class="kicker">Sobre mí</p>
+          <h2>Fernando Lizana</h2>
+          <p>Soy ingeniero en telecomunicaciones. Trabajo en QA y automatización, en monitoreo y en sistemas con inteligencia artificial. Me interesa que una herramienta explique qué va a hacer y que se pueda comprobar.</p>
+        </div>
+        <div class="contact" id="contacto">
+          <h3>Contacto</h3>
+          <ul>
+            <li><a href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a href="https://digitalriderspa.com/" target="_blank" rel="noopener noreferrer">digitalriderspa.com</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="colophon">
+        <p id="sync">Sincronización pendiente.</p>
+      </footer>
+    </main>
+
+    <aside id="detail" class="detail" hidden role="dialog" aria-modal="true" aria-labelledby="detail-title">
       <div class="detail-bar">
+        <p id="detail-kicker" class="kicker"></p>
         <button type="button" id="detail-close">Cerrar</button>
       </div>
       <h2 id="detail-title"></h2>
       <p id="detail-flags" class="flags" hidden></p>
+      <figure id="detail-figure" hidden>
+        <img id="detail-image" alt="">
+      </figure>
       <p id="detail-description"></p>
+      <section id="detail-does" hidden>
+        <h3>Qué hace</h3>
+        <p id="detail-does-text"></p>
+        <ul id="detail-points"></ul>
+      </section>
+      <section id="detail-built" hidden>
+        <h3>Cómo está construido</h3>
+        <p id="detail-stack"></p>
+      </section>
       <dl id="detail-meta"></dl>
       <div id="detail-topics"></div>
+      <p id="detail-updated" class="quiet"></p>
+      <p id="detail-role" class="quiet" hidden></p>
       <div class="detail-actions">
         <a id="detail-repo" target="_blank" rel="noopener noreferrer">Ver repositorio</a>
         <a id="detail-home" target="_blank" rel="noopener noreferrer" hidden>Visitar proyecto</a>
       </div>
     </aside>
 
-    <section id="lista" class="list-view" hidden aria-labelledby="list-title">
-      <h2 id="list-title" tabindex="-1">Lista de proyectos</h2>
-      <p class="list-lead">Los mismos repositorios públicos, con búsqueda, filtros y enlaces. Esta vista no depende de WebGL.</p>
-      <p id="fallback-note" class="fallback" hidden></p>
-      <div id="list-items"></div>
-    </section>
-
     <noscript>
-      <p style="position:fixed;z-index:30;left:1rem;right:1rem;bottom:1rem;margin:0;padding:1rem 1.1rem;border-radius:16px;background:#101826;color:#eef3f8;font-family:Segoe UI,sans-serif;">Para explorar los proyectos hace falta JavaScript. El catálogo se publica con el sitio y no consulta GitHub desde el navegador.</p>
+      <p class="noscript">Para explorar los proyectos hace falta JavaScript. El catálogo se publica con el sitio y no consulta GitHub desde el navegador.</p>
     </noscript>
     <script type="module" src="./src/main.ts"></script>
   </body>

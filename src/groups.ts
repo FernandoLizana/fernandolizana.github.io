@@ -6,6 +6,7 @@ const NAMED_COLORS: Record<string, string> = {
   HTML: '#5ad7ff',
   CSS: '#d2b6ff',
   Python: '#c3b4ff',
+  Java: '#8ec9c4',
   'Sin lenguaje': '#f4ecdf',
 }
 
@@ -15,6 +16,7 @@ const NAMED_SECTORS: Record<string, number> = {
   HTML: 0.55,
   CSS: 1.35,
   Python: 2.2,
+  Java: 3.15,
   JavaScript: 3.9,
   TypeScript: 5.05,
   'Sin lenguaje': 5.8,
@@ -74,13 +76,49 @@ export function repoPosition(id: number, language: string | null | undefined): V
   const local = mulberry32(seedFromId(id) ^ hashString(`star:${key}`))
   const along = local()
   const angle = sectorAngle(key) + (local() - 0.5) * wedge
-  const radius = 16 + along * 52
-  const tangential = (local() - 0.5) * 7
-  const y = (local() - 0.5) * 14 * (0.4 + along * 0.6)
+  const radius = 14 + along * 28
+  const tangential = (local() - 0.5) * 5
+  const y = (local() - 0.5) * 8 * (0.45 + along * 0.55)
   return {
     x: Math.cos(angle) * radius - Math.sin(angle) * tangential,
     y,
     z: Math.sin(angle) * radius + Math.cos(angle) * tangential,
+  }
+}
+
+/** Encuadra la cámara sobre las estrellas reales, sin moverlas. */
+export function frameHome(positions: Vec3[]): { position: Vec3; target: Vec3 } {
+  if (!positions.length) {
+    return { position: { x: 0, y: 18, z: 64 }, target: { x: 0, y: 0, z: 0 } }
+  }
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+  let minZ = Infinity
+  let maxZ = -Infinity
+  for (const point of positions) {
+    minX = Math.min(minX, point.x)
+    maxX = Math.max(maxX, point.x)
+    minY = Math.min(minY, point.y)
+    maxY = Math.max(maxY, point.y)
+    minZ = Math.min(minZ, point.z)
+    maxZ = Math.max(maxZ, point.z)
+  }
+  const target = {
+    x: (minX + maxX) / 2,
+    y: (minY + maxY) / 2,
+    z: (minZ + maxZ) / 2,
+  }
+  const span = Math.max(maxX - minX, maxY - minY, maxZ - minZ, 22)
+  const distance = span * 1.15 + 36
+  return {
+    target,
+    position: {
+      x: target.x + distance * 0.08,
+      y: target.y + distance * 0.42,
+      z: target.z + distance,
+    },
   }
 }
 

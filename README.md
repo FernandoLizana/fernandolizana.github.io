@@ -13,7 +13,9 @@ npm run dev
 
 `npm run dev` abre el sitio en local. `npm run sync` vuelve a leer los repositorios públicos y solo sustituye `public/catalog.json` si la descarga está completa. `npm run build` comprueba ese catálogo y genera `dist/`. `npm run preview` sirve la compilación.
 
-Los repositorios de cuando estaba aprendiendo a programar están en `scripts/excluded-repos.json` y no aparecen. El repositorio del perfil, `FernandoLizana`, tampoco: es la presentación, no un proyecto. Un repositorio público nuevo, que no esté en esa lista, entra solo en la próxima sincronización. Para volver a mostrar uno antiguo, quítalo de esa lista y ejecuta `npm run sync`.
+Los repositorios de cuando estaba aprendiendo a programar están en `scripts/excluded-repos.json` y no aparecen. El repositorio del perfil, `FernandoLizana`, tampoco: es la presentación, no un proyecto. Por eso GitHub puede mostrar más repositorios públicos que la galaxia: la sincronización descarga todas las páginas, compara el total con el perfil y después aplica esa lista. Un repositorio público nuevo, que no esté en ella, entra solo en la próxima sincronización.
+
+Los textos de las fichas y el orden de los destacados viven en `public/editorial.json`. Si un nombre de ahí no está en el catálogo público, no se muestra.
 
 ## Publicar en GitHub Pages
 

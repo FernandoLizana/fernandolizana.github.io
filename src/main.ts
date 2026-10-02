@@ -1,4 +1,5 @@
 import { loadCatalog } from './catalog.ts'
+import { loadEditorial } from './editorial.ts'
 import { createScene, type SceneController } from './scene.ts'
 import { mountUi, preferredMotion, storeMotion } from './ui.ts'
 
@@ -27,12 +28,14 @@ async function main() {
     return
   }
 
+  const editorial = await loadEditorial()
   let ambient = preferredMotion()
   let scene: SceneController | null = null
   const startList = new URLSearchParams(location.search).get('vista') === 'lista'
 
   const ui = mountUi({
     catalog,
+    editorial,
     motion: ambient,
     startList,
     handlers: {
@@ -73,9 +76,11 @@ async function main() {
     scene = createScene({
       canvas,
       repos: catalog.repos,
+      featuredIds: ui.featuredIds(),
       motion: ambient,
       onHover: (hit) => ui.hover(hit),
       onSelect: (id) => ui.select(id),
+      onLabels: (labels) => ui.placeLabels(labels),
       onContextLost: () => {
         scene?.setPaused(true)
         ui.forceList('Se perdió la vista tridimensional. La lista sigue disponible con los mismos proyectos.')
