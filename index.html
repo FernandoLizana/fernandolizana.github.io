@@ -1,15 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Fernando Lizana</title>
-        <meta name="description" content="">
-        <meta name="keywords" content="">
-        <meta name="author" content="Fernando Lizana">
-        <link rel="shortcut icon" href="assets/img/favicon.png"/>
-    </head>
-    <body>
-        <p>Hola Mundo!</p>
-    </body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Fernando Lizana · Universo de proyectos</title>
+    <meta name="description" content="Explora mis proyectos. Cada estrella, una idea hecha código.">
+    <meta name="author" content="Fernando Lizana">
+    <meta name="theme-color" content="#070b14">
+    <meta property="og:title" content="Fernando Lizana · Universo de proyectos">
+    <meta property="og:description" content="Explora mis proyectos. Cada estrella, una idea hecha código.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./banner.png">
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@360;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css">
+  </head>
+  <body>
+    <a class="skip" href="#lista">Ir a la lista de proyectos</a>
+    <div class="vignette" aria-hidden="true"></div>
+    <canvas id="galaxy" aria-hidden="true"></canvas>
+    <p id="hover-label" class="hover-label" role="tooltip" hidden></p>
+
+    <header class="top">
+      <div class="identity">
+        <a class="name" href="https://github.com/FernandoLizana">Fernando Lizana</a>
+        <p class="portfolio">Universo de proyectos</p>
+        <p class="tagline">Explora mis proyectos. Cada estrella, una idea hecha código.</p>
+      </div>
+      <div class="controls">
+        <div class="search">
+          <label class="sr" for="q">Buscar por nombre, descripción o topics</label>
+          <input id="q" type="search" placeholder="Buscar proyectos" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results">
+          <ul id="search-results" role="listbox" hidden></ul>
+        </div>
+        <details class="filters" id="filters">
+          <summary>Filtros</summary>
+          <div class="filters-body">
+            <fieldset>
+              <legend>Lenguaje</legend>
+              <div id="language-filters"></div>
+            </fieldset>
+            <label>
+              Bifurcaciones
+              <select id="fork-filter">
+                <option value="all">Todas</option>
+                <option value="only">Solo bifurcaciones</option>
+                <option value="hide">Ocultar bifurcaciones</option>
+              </select>
+            </label>
+            <label>
+              Archivados
+              <select id="archived-filter">
+                <option value="all">Todos</option>
+                <option value="only">Solo archivados</option>
+                <option value="hide">Ocultar archivados</option>
+              </select>
+            </label>
+          </div>
+        </details>
+        <button type="button" id="view-toggle" aria-pressed="false">Lista de proyectos</button>
+        <button type="button" id="motion" aria-pressed="true">Movimiento</button>
+        <button type="button" id="reset-view">Ver galaxia completa</button>
+        <p id="count" aria-live="polite">Cargando el catálogo…</p>
+      </div>
+    </header>
+
+    <aside id="legend" class="legend" aria-label="Leyenda de la galaxia">
+      <div id="legend-body"></div>
+      <p id="sync" class="sync"></p>
+    </aside>
+    <p id="empty" class="empty" hidden></p>
+
+    <aside id="detail" class="detail" hidden aria-labelledby="detail-title">
+      <div class="detail-bar">
+        <button type="button" id="detail-close">Cerrar</button>
+      </div>
+      <h2 id="detail-title"></h2>
+      <p id="detail-flags" class="flags" hidden></p>
+      <p id="detail-description"></p>
+      <dl id="detail-meta"></dl>
+      <div id="detail-topics"></div>
+      <div class="detail-actions">
+        <a id="detail-repo" target="_blank" rel="noopener noreferrer">Ver repositorio</a>
+        <a id="detail-home" target="_blank" rel="noopener noreferrer" hidden>Visitar proyecto</a>
+      </div>
+    </aside>
+
+    <section id="lista" class="list-view" hidden aria-labelledby="list-title">
+      <h2 id="list-title" tabindex="-1">Lista de proyectos</h2>
+      <p class="list-lead">Los mismos repositorios públicos, con búsqueda, filtros y enlaces. Esta vista no depende de WebGL.</p>
+      <p id="fallback-note" class="fallback" hidden></p>
+      <div id="list-items"></div>
+    </section>
+
+    <noscript>
+      <p style="position:fixed;z-index:30;left:1rem;right:1rem;bottom:1rem;margin:0;padding:1rem 1.1rem;border-radius:16px;background:#101826;color:#eef3f8;font-family:Segoe UI,sans-serif;">Para explorar los proyectos hace falta JavaScript. El catálogo se publica con el sitio y no consulta GitHub desde el navegador.</p>
+    </noscript>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
 </html>
