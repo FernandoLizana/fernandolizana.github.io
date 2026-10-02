@@ -1,13 +1,13 @@
 {
-  "syncedAt": "2026-10-02T01:52:14.926Z",
+  "syncedAt": "2026-10-02T01:56:24.370Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 2,
-  "expectedCount": 2,
+  "count": 1,
+  "expectedCount": 1,
   "fetchedCount": 9,
   "publicRepos": 9,
-  "excludedCount": 7,
+  "excludedCount": 8,
   "pagesFetched": 1,
   "repos": [
     {
@@ -23,20 +23,6 @@
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/Espectro",
       "pushedAt": "2026-10-02T01:39:35Z"
-    },
-    {
-      "id": 1400910827,
-      "name": "FernandoLizana",
-      "description": "Telecom Engineer & QA Automation Specialist",
-      "language": null,
-      "topics": [],
-      "stargazersCount": 0,
-      "forksCount": 0,
-      "fork": false,
-      "archived": false,
-      "homepage": null,
-      "htmlUrl": "https://github.com/FernandoLizana/FernandoLizana",
-      "pushedAt": "2026-10-02T01:50:58Z"
     }
   ]
 }
