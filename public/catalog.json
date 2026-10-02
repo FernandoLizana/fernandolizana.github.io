@@ -1,13 +1,28 @@
 {
-  "syncedAt": "2026-10-01T05:02:46.079Z",
+  "syncedAt": "2026-10-02T01:48:59.816Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 0,
-  "expectedCount": 0,
-  "fetchedCount": 7,
-  "publicRepos": 7,
+  "count": 1,
+  "expectedCount": 1,
+  "fetchedCount": 8,
+  "publicRepos": 8,
   "excludedCount": 7,
   "pagesFetched": 1,
-  "repos": []
+  "repos": [
+    {
+      "id": 1400902908,
+      "name": "Espectro",
+      "description": "Monitor de audio para radios de Digital Rider SPA. El micrófono del PC escucha el transmisor y guarda envío y recepción.",
+      "language": "Python",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/Espectro",
+      "pushedAt": "2026-10-02T01:39:35Z"
+    }
+  ]
 }
