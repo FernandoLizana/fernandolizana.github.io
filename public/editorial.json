@@ -1,0 +1,36 @@
+{
+  "featured": ["Espectro", "limpieza", "impulso"],
+  "projects": {
+    "Espectro": {
+      "does": "El micrófono del computador escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para conservar el intercambio completo.",
+      "points": [
+        "Los dos lados del mensaje quedan registrados.",
+        "Hay consola de escritorio y consola web local.",
+        "No es un analizador de radiofrecuencia."
+      ],
+      "built": ["Python", "PyAudio", "NumPy", "Flask"]
+    },
+    "limpieza": {
+      "does": "Revisa cachés y temporales conocidos en Windows y Linux, clasifica qué se puede regenerar y, por defecto, solo simula el borrado.",
+      "points": [
+        "Nada se borra hasta confirmarlo.",
+        "No toca documentos, el escritorio, imágenes ni las raíces del sistema.",
+        "Tiene línea de comandos e interfaz gráfica."
+      ],
+      "built": ["Python", "biblioteca estándar"]
+    },
+    "impulso": {
+      "does": "Muestra una frase en español que se mantiene durante el día. Funciona sin cuenta, sin conexión y sin anuncios.",
+      "points": [
+        "El catálogo viaja dentro de la aplicación.",
+        "Los recordatorios nacen apagados.",
+        "No hay rachas ni puntajes."
+      ],
+      "built": ["Java", "Android"],
+      "image": {
+        "src": "https://raw.githubusercontent.com/FernandoLizana/impulso/master/docs/capturas/explorar-claro.png",
+        "alt": "Explorar el catálogo de Impulso por categoría"
+      }
+    }
+  }
+}

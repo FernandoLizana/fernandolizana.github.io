@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { buildStarLayout, constellationPairs, repoPosition, sectorAngle } from './groups.ts'
+import { buildStarLayout, constellationPairs, frameHome, repoPosition, sectorAngle } from './groups.ts'
 
 test('la posición depende solo del id y del lenguaje', () => {
   const first = repoPosition(1207539070, 'JavaScript')
@@ -48,6 +48,20 @@ test('las líneas forman una constelación y no una malla completa', () => {
   assert.equal(htmlPairs.length, 1)
   assert.equal(pairs.filter((pair) => pair.language === 'Python').length, 0)
   assert.ok(htmlPairs.every((pair) => pair.a !== 2 && pair.b !== 2))
+})
+
+test('la cámara se centra en las estrellas reales', () => {
+  const positions = [
+    repoPosition(1400902908, 'Python'),
+    repoPosition(1400968376, 'Java'),
+    repoPosition(1399164453, 'Python'),
+  ]
+  const frame = frameHome(positions)
+  const xs = positions.map((point) => point.x)
+  assert.ok(frame.target.x >= Math.min(...xs) - 0.001)
+  assert.ok(frame.target.x <= Math.max(...xs) + 0.001)
+  assert.ok(frame.position.z > frame.target.z)
+  assert.deepEqual(repoPosition(1400902908, 'Python'), positions[0])
 })
 
 test('ocultar una estrella no mueve a las demás', () => {

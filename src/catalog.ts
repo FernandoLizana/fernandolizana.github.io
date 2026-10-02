@@ -38,10 +38,11 @@ export function parseCatalog(data: unknown): Catalog {
   if (catalog.repos.length !== catalog.count || catalog.count !== catalog.expectedCount) {
     throw new Error('El total del catálogo no coincide con los repositorios descargados.')
   }
-  if (!Number.isInteger(catalog.excludedCount) || catalog.excludedCount < 0 || catalog.fetchedCount !== catalog.publicRepos) {
+  const excludedCount = catalog.excludedCount
+  if (typeof excludedCount !== 'number' || !Number.isInteger(excludedCount) || excludedCount < 0 || catalog.fetchedCount !== catalog.publicRepos) {
     throw new Error('El catálogo no acredita una descarga completa.')
   }
-  if (catalog.fetchedCount !== catalog.count + catalog.excludedCount) {
+  if (catalog.fetchedCount !== catalog.count + excludedCount) {
     throw new Error('El catálogo no cuadra con los repositorios que quedaron fuera.')
   }
   if (!catalog.syncedAt || Number.isNaN(Date.parse(catalog.syncedAt))) {

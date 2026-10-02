@@ -1,17 +1,25 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { colorForLanguage, constellationPairs, buildStarLayout } from './groups.ts'
+import { buildStarLayout, colorForLanguage, constellationPairs, frameHome } from './groups.ts'
 import type { Repo } from './types.ts'
 
-const HOME_POS = new THREE.Vector3(0, 42, 96)
+const HOME_POS = new THREE.Vector3(0, 12, 54)
 const HOME_TARGET = new THREE.Vector3(0, 0, 0)
-const FOCUS_OFFSET = new THREE.Vector3(14, 18, 32)
+const FOCUS_OFFSET = new THREE.Vector3(7, 8, 18)
 
 export type HoverHit = {
   id: number
   name: string
   x: number
   y: number
+}
+
+export type SceneLabel = {
+  id: number
+  name: string
+  x: number
+  y: number
+  visible: boolean
 }
 
 export type SceneController = {
@@ -164,9 +172,11 @@ function mulberry(seed: number): () => number {
 export function createScene(options: {
   canvas: HTMLCanvasElement
   repos: Repo[]
+  featuredIds: readonly number[]
   motion: boolean
   onHover: (hit: HoverHit | null) => void
   onSelect: (id: number) => void
+  onLabels: (labels: SceneLabel[]) => void
   onContextLost: () => void
 }): SceneController {
   const quality = detectQuality()
@@ -196,8 +206,15 @@ export function createScene(options: {
   controls.enablePan = false
   controls.rotateSpeed = 0.65
   controls.zoomSpeed = 0.7
-  controls.minDistance = 20
-  controls.maxDistance = 180
+  controls.minDistance = 16
+  controls.maxDistance = 120
+  options.canvas.addEventListener(
+    'wheel',
+    (event) => {
+      if (!event.ctrlKey) event.stopPropagation()
+    },
+    { capture: true },
+  )
   controls.minPolarAngle = 0.2
   controls.maxPolarAngle = 1.35
   controls.touches.ONE = 0
@@ -221,6 +238,7 @@ export function createScene(options: {
     ['rgba(80, 220, 230, 0.10)', 'rgba(20, 60, 120, 0.04)', 130],
     ['rgba(180, 140, 255, 0.10)', 'rgba(40, 20, 80, 0.03)', 110],
   ]
+  const nebulaSprites: THREE.Sprite[] = []
   const nebulaRand = mulberry(0x0a11c0de)
   for (let index = 0; index < quality.nebulas; index += 1) {
     const [inner, outer, scale] = nebulaColors[index % nebulaColors.length]
@@ -238,7 +256,10 @@ export function createScene(options: {
     sprite.position.set(Math.cos(angle) * radius, (nebulaRand() - 0.5) * 12, Math.sin(angle) * radius)
     sprite.scale.set(scale, scale * (0.62 + nebulaRand() * 0.3), 1)
     decor.add(sprite)
+    nebulaSprites.push(sprite)
   }
+
+  const featured = new Set(options.featuredIds)
 
   const layouts = buildStarLayout(options.repos)
   const byId = new Map<number, StarRecord>()
@@ -260,8 +281,9 @@ export function createScene(options: {
       haloCache.set(hex, haloMap)
     }
     const position = new THREE.Vector3(layout.position.x, layout.position.y, layout.position.z)
-    const baseHalo = 15.5 * quality.starScale
-    const baseCore = (layout.fork ? 6.4 : 5.5) * quality.starScale
+    const emphasis = featured.has(layout.id) ? 1.18 : 1
+    const baseHalo = 15.5 * quality.starScale * emphasis
+    const baseCore = (layout.fork ? 6.4 : 5.5) * quality.starScale * emphasis
     const halo = new THREE.Sprite(
       new THREE.SpriteMaterial({
         map: haloMap,
@@ -304,10 +326,22 @@ export function createScene(options: {
     })
   }
 
+  const framed = frameHome([...byId.values()].map((record) => ({
+    x: record.position.x,
+    y: record.position.y,
+    z: record.position.z,
+  })))
+  const homePos = new THREE.Vector3(framed.position.x, framed.position.y, framed.position.z)
+  const homeTarget = new THREE.Vector3(framed.target.x, framed.target.y, framed.target.z)
+  camera.position.copy(homePos)
+  controls.target.copy(homeTarget)
+  controls.maxDistance = Math.max(140, camera.position.distanceTo(homeTarget) + 40)
+  controls.update()
+
   const lineMaterial = new THREE.LineBasicMaterial({
     vertexColors: true,
     transparent: true,
-    opacity: 0.42,
+    opacity: 0.28,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     fog: false,
@@ -340,18 +374,29 @@ export function createScene(options: {
   }
 
   function applyScale() {
+    const focused = selectedId !== null
     for (const record of byId.values()) {
       const selected = record.id === selectedId
       const distance = Math.max(camera.position.distanceTo(record.position), 1)
-      const boost = Math.min(1.55, Math.max(0.88, distance / 105))
-      const factor = (selected ? 1.34 : 1) * boost
+      const boost = Math.min(1.55, Math.max(0.88, distance / 78))
+      const factor = (selected ? 1.28 : 1) * boost
       record.core.scale.setScalar(record.baseCore * factor)
       record.halo.scale.setScalar(record.baseHalo * factor)
       const coreMaterial = record.core.material as THREE.SpriteMaterial
       const haloMaterial = record.halo.material as THREE.SpriteMaterial
-      coreMaterial.opacity = record.archived && !selected ? 0.75 : 1
-      haloMaterial.opacity = record.archived && !selected ? 0.42 : 0.95
+      const dim = focused && !selected
+      coreMaterial.opacity = dim ? 0.28 : record.archived ? 0.75 : 1
+      haloMaterial.opacity = dim ? 0.12 : record.archived ? 0.42 : 0.9
     }
+    lineMaterial.opacity = focused ? 0.08 : 0.28
+    const atmosphere = focused ? 0.34 : 1
+    for (const sprite of nebulaSprites) {
+      sprite.material.opacity = 0.9 * atmosphere
+    }
+    const skyMaterial = sky.material as THREE.PointsMaterial
+    skyMaterial.opacity = 0.8 * atmosphere
+    const hazeMaterial = haze.points.material as THREE.PointsMaterial
+    hazeMaterial.opacity = 0.5 * atmosphere
   }
 
   function rebuildLines(visible: ReadonlySet<number>) {
@@ -512,17 +557,40 @@ export function createScene(options: {
 
   function render(now: number) {
     const delta = Math.min(clock.getDelta(), 0.05)
+    const dustMaterial = dust.points.material as THREE.PointsMaterial
+    const focusDim = selectedId !== null ? 0.4 : 1
     if (motion) {
       spin += delta * 0.012
-      const dustMaterial = dust.points.material as THREE.PointsMaterial
-      dustMaterial.opacity = 0.58 + Math.sin(now * 0.00035) * 0.05
+      dustMaterial.opacity = (0.5 + Math.sin(now * 0.00035) * 0.04) * focusDim
+    } else {
+      dustMaterial.opacity = 0.5 * focusDim
     }
     decor.rotation.y = spin
     stepFlight(now)
     if (!flight) controls.update()
     applyScale()
+    publishLabels()
     if (hoveredId !== null) publishHover()
     renderer.render(scene, camera)
+  }
+
+  function publishLabels() {
+    const width = options.canvas.clientWidth
+    const height = options.canvas.clientHeight
+    const labels: SceneLabel[] = []
+    for (const id of featured) {
+      const record = byId.get(id)
+      if (!record) continue
+      const projected = record.position.clone().project(camera)
+      labels.push({
+        id: record.id,
+        name: record.name,
+        x: (projected.x * 0.5 + 0.5) * width,
+        y: (-projected.y * 0.5 + 0.5) * height,
+        visible: record.halo.visible && projected.z < 1,
+      })
+    }
+    options.onLabels(labels)
   }
 
   function loop(now: number) {
@@ -600,7 +668,7 @@ export function createScene(options: {
     resetView(animate) {
       selectedId = null
       applyScale()
-      flyTo(HOME_POS.clone(), HOME_TARGET.clone(), animate)
+      flyTo(homePos.clone(), homeTarget.clone(), animate)
     },
     setMotion(enabled) {
       motion = enabled
