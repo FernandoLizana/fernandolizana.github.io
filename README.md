@@ -13,7 +13,7 @@ npm run dev
 
 `npm run dev` abre el sitio en local. `npm run sync` vuelve a leer los repositorios públicos y solo sustituye `public/catalog.json` si la descarga está completa. `npm run build` comprueba ese catálogo y genera `dist/`. `npm run preview` sirve la compilación.
 
-Los repositorios de cuando estaba aprendiendo a programar están en `scripts/excluded-repos.json` y no aparecen. Un repositorio público nuevo, que no esté en esa lista, entra solo en la próxima sincronización. Para volver a mostrar uno antiguo, quítalo de esa lista y ejecuta `npm run sync`.
+Los repositorios de cuando estaba aprendiendo a programar están en `scripts/excluded-repos.json` y no aparecen. El repositorio del perfil, `FernandoLizana`, tampoco: es la presentación, no un proyecto. Un repositorio público nuevo, que no esté en esa lista, entra solo en la próxima sincronización. Para volver a mostrar uno antiguo, quítalo de esa lista y ejecuta `npm run sync`.
 
 ## Publicar en GitHub Pages
 
@@ -30,7 +30,7 @@ Los recursos usan rutas relativas. En el repositorio:
 
 ## Perfil de GitHub
 
-No existe el repositorio especial `FernandoLizana/FernandoLizana`, así que el perfil todavía no tiene README. En `profile/` están el texto y el banner, hechos a partir de una captura real de la galaxia. Crea ese repositorio vacío y copia allí `README.md` y `banner.png`. El enlace del banner apunta al portafolio. La biografía pública y [digitalriderspa.com](https://digitalriderspa.com/) se mantienen en esa presentación.
+El perfil público está en [FernandoLizana/FernandoLizana](https://github.com/FernandoLizana/FernandoLizana), con el banner y el enlace al portafolio. La biografía y [digitalriderspa.com](https://digitalriderspa.com/) se mantienen en esa presentación. Las copias de trabajo viven en `profile/`.
 
 ## Qué se comprueba
 
