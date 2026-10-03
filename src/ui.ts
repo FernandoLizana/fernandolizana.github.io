@@ -9,6 +9,7 @@ import {
   visibleRepos,
 } from './catalog.ts'
 import { entryFor, featuredRepos, type Editorial } from './editorial.ts'
+import { bindMusic } from './music.ts'
 import { colorForLanguage } from './groups.ts'
 import type { SceneLabel } from './scene.ts'
 import type { Catalog, FilterState, Repo } from './types.ts'
@@ -127,6 +128,7 @@ export function mountUi(options: {
   const viewGalaxy = required<HTMLButtonElement>('#view-galaxy')
   const viewToggle = required<HTMLButtonElement>('#view-toggle')
   const motionButton = required<HTMLButtonElement>('#motion')
+  const musicButton = required<HTMLButtonElement>('#music')
   const resetButton = required<HTMLButtonElement>('#reset-view')
   const hoverLabel = required<HTMLParagraphElement>('#hover-label')
   const canvas = required<HTMLCanvasElement>('#galaxy')
@@ -134,6 +136,7 @@ export function mountUi(options: {
   const featuredGrid = required<HTMLDivElement>('#featured-grid')
 
   paintMotion(options.motion)
+  bindMusic(musicButton)
   const synced = formatDay(catalog.syncedAt)
   sync.textContent = synced ? `Sincronizado el ${synced} (UTC).` : 'Sin fecha de sincronización.'
   coverage.textContent = catalog.excludedCount
@@ -228,22 +231,23 @@ export function mountUi(options: {
     const entry = entryFor(editorial, repo)
     const article = document.createElement('article')
     article.className = 'featured-card'
+    const heading = document.createElement('h3')
+    heading.textContent = repo.name
+    article.append(heading)
+    const description = document.createElement('p')
+    description.className = 'featured-copy'
+    description.textContent = entry?.does ?? repo.description ?? 'Este repositorio no incluye descripción.'
+    article.append(description)
+    const meta = document.createElement('p')
+    meta.className = 'quiet'
+    meta.textContent = [kindLabel(repo), repo.language ?? 'Sin lenguaje principal'].join(' · ')
+    article.append(meta)
     if (entry?.image) {
       const image = document.createElement('img')
       image.src = entry.image.src
       image.alt = entry.image.alt
       article.append(image)
     }
-    const heading = document.createElement('h3')
-    heading.textContent = repo.name
-    article.append(heading)
-    const description = document.createElement('p')
-    description.textContent = repo.description ?? entry?.does ?? 'Este repositorio no incluye descripción.'
-    article.append(description)
-    const meta = document.createElement('p')
-    meta.className = 'quiet'
-    meta.textContent = [kindLabel(repo), repo.language ?? 'Sin lenguaje principal'].join(' · ')
-    article.append(meta)
     const actions = document.createElement('p')
     actions.className = 'featured-actions'
     const open = document.createElement('button')

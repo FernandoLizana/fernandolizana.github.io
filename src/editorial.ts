@@ -79,7 +79,7 @@ export async function loadEditorial(): Promise<Editorial> {
   }
 }
 
-export function featuredRepos(repos: Repo[], editorial: Editorial, limit = 3): Repo[] {
+export function featuredRepos(repos: Repo[], editorial: Editorial, limit = 6): Repo[] {
   const byName = new Map(repos.map((repo) => [repo.name, repo]))
   const picked: Repo[] = []
   for (const name of editorial.featured) {
