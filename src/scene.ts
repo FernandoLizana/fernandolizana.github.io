@@ -68,9 +68,9 @@ function detectQuality(): Quality {
   const coarse = window.matchMedia('(pointer: coarse)').matches
   const low = narrow || cores <= 4
   return {
-    dust: low ? 1400 : 5600,
-    sky: low ? 650 : 1600,
-    nebulas: low ? 3 : 5,
+    dust: low ? 4200 : 15000,
+    sky: low ? 500 : 1100,
+    nebulas: low ? 2 : 3,
     pixelRatio: Math.min(window.devicePixelRatio || 1, low ? 1.25 : 1.6),
     antialias: !low,
     starScale: coarse ? 1.38 : 1,
@@ -138,9 +138,10 @@ function haloTexture(hex: string): THREE.CanvasTexture {
   return makeTexture(256, (context, size) => {
     const center = size / 2
     const gradient = context.createRadialGradient(center, center, size * 0.02, center, center, center)
-    gradient.addColorStop(0, hexToRgba(hex, 0.02))
-    gradient.addColorStop(0.18, hexToRgba(hex, 0.55))
-    gradient.addColorStop(0.42, hexToRgba(hex, 0.18))
+    gradient.addColorStop(0, hexToRgba(hex, 0.05))
+    gradient.addColorStop(0.08, hexToRgba(hex, 0.85))
+    gradient.addColorStop(0.2, hexToRgba(hex, 0.22))
+    gradient.addColorStop(0.42, hexToRgba(hex, 0))
     gradient.addColorStop(1, hexToRgba(hex, 0))
     context.fillStyle = gradient
     context.fillRect(0, 0, size, size)
@@ -190,12 +191,11 @@ export function createScene(options: {
     throw new Error('WebGL no está disponible.')
   }
   renderer.setPixelRatio(quality.pixelRatio)
-  renderer.setClearColor(0x070b14, 1)
+  renderer.setClearColor(0x000000, 1)
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.NoToneMapping
 
   const scene = new THREE.Scene()
-  scene.fog = new THREE.FogExp2(0x070b14, 0.0038)
   const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 900)
   camera.position.copy(HOME_POS)
 
@@ -226,38 +226,12 @@ export function createScene(options: {
   scene.add(decor, projects)
 
   const diskTexture = softDisk()
-  const dust = createDisk(quality.dust, 0x51a7e1, 78, 7, '#9ecfff', 0.55, diskTexture)
-  const haze = createDisk(Math.round(quality.dust * 0.35), 0x88c0de, 90, 16, '#6d5ea8', 1.15, diskTexture)
+  const spiral = createSpiral(quality.dust, 58, diskTexture)
+  const sparks = createSpiral(Math.round(quality.dust * 0.14), 54, diskTexture, 2.6, 0.95)
   const sky = createSky(quality.sky, diskTexture)
-  decor.add(dust.points, haze.points, sky)
-
-  const nebulaColors: Array<[string, string, number]> = [
-    ['rgba(90, 190, 255, 0.20)', 'rgba(40, 80, 180, 0.05)', 120],
-    ['rgba(150, 120, 255, 0.16)', 'rgba(70, 40, 140, 0.04)', 150],
-    ['rgba(255, 214, 170, 0.08)', 'rgba(180, 120, 80, 0.03)', 100],
-    ['rgba(80, 220, 230, 0.10)', 'rgba(20, 60, 120, 0.04)', 130],
-    ['rgba(180, 140, 255, 0.10)', 'rgba(40, 20, 80, 0.03)', 110],
-  ]
-  const nebulaSprites: THREE.Sprite[] = []
-  const nebulaRand = mulberry(0x0a11c0de)
-  for (let index = 0; index < quality.nebulas; index += 1) {
-    const [inner, outer, scale] = nebulaColors[index % nebulaColors.length]
-    const material = new THREE.SpriteMaterial({
-      map: nebulaTexture(inner, outer),
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      opacity: 0.9,
-      fog: false,
-    })
-    const sprite = new THREE.Sprite(material)
-    const angle = nebulaRand() * Math.PI * 2
-    const radius = 10 + nebulaRand() * 48
-    sprite.position.set(Math.cos(angle) * radius, (nebulaRand() - 0.5) * 12, Math.sin(angle) * radius)
-    sprite.scale.set(scale, scale * (0.62 + nebulaRand() * 0.3), 1)
-    decor.add(sprite)
-    nebulaSprites.push(sprite)
-  }
+  const coreGlow = createCoreGlow()
+  decor.add(spiral, sparks, sky, ...coreGlow)
+  decor.rotation.x = 0.38
 
   const featured = new Set(options.featuredIds)
 
@@ -281,9 +255,9 @@ export function createScene(options: {
       haloCache.set(hex, haloMap)
     }
     const position = new THREE.Vector3(layout.position.x, layout.position.y, layout.position.z)
-    const emphasis = featured.has(layout.id) ? 1.18 : 1
-    const baseHalo = 15.5 * quality.starScale * emphasis
-    const baseCore = (layout.fork ? 6.4 : 5.5) * quality.starScale * emphasis
+    const emphasis = featured.has(layout.id) ? 1.22 : 1
+    const baseHalo = 11 * quality.starScale * emphasis
+    const baseCore = (layout.fork ? 3.6 : 2.8) * quality.starScale * emphasis
     const halo = new THREE.Sprite(
       new THREE.SpriteMaterial({
         map: haloMap,
@@ -333,6 +307,7 @@ export function createScene(options: {
   })))
   const homePos = new THREE.Vector3(framed.position.x, framed.position.y, framed.position.z)
   const homeTarget = new THREE.Vector3(framed.target.x, framed.target.y, framed.target.z)
+  decor.position.copy(homeTarget)
   camera.position.copy(homePos)
   controls.target.copy(homeTarget)
   controls.maxDistance = Math.max(140, camera.position.distanceTo(homeTarget) + 40)
@@ -388,15 +363,18 @@ export function createScene(options: {
       coreMaterial.opacity = dim ? 0.28 : record.archived ? 0.75 : 1
       haloMaterial.opacity = dim ? 0.12 : record.archived ? 0.42 : 0.9
     }
-    lineMaterial.opacity = focused ? 0.08 : 0.28
-    const atmosphere = focused ? 0.34 : 1
-    for (const sprite of nebulaSprites) {
-      sprite.material.opacity = 0.9 * atmosphere
-    }
+    lineMaterial.opacity = focused ? 0.16 : 0.34
+    const atmosphere = focused ? 0.28 : 1
+    const spiralMaterial = spiral.material as THREE.PointsMaterial
+    const sparkMaterial = sparks.material as THREE.PointsMaterial
     const skyMaterial = sky.material as THREE.PointsMaterial
-    skyMaterial.opacity = 0.8 * atmosphere
-    const hazeMaterial = haze.points.material as THREE.PointsMaterial
-    hazeMaterial.opacity = 0.5 * atmosphere
+    spiralMaterial.opacity = 0.9 * atmosphere
+    sparkMaterial.opacity = 0.95 * atmosphere
+    skyMaterial.opacity = 0.7 * atmosphere
+    for (const sprite of coreGlow) {
+      const base = typeof sprite.userData.baseOpacity === 'number' ? sprite.userData.baseOpacity : 0.8
+      sprite.material.opacity = base * atmosphere
+    }
   }
 
   function rebuildLines(visible: ReadonlySet<number>) {
@@ -557,18 +535,15 @@ export function createScene(options: {
 
   function render(now: number) {
     const delta = Math.min(clock.getDelta(), 0.05)
-    const dustMaterial = dust.points.material as THREE.PointsMaterial
-    const focusDim = selectedId !== null ? 0.4 : 1
-    if (motion) {
-      spin += delta * 0.012
-      dustMaterial.opacity = (0.5 + Math.sin(now * 0.00035) * 0.04) * focusDim
-    } else {
-      dustMaterial.opacity = 0.5 * focusDim
-    }
+    if (motion) spin += delta * 0.04
     decor.rotation.y = spin
     stepFlight(now)
     if (!flight) controls.update()
     applyScale()
+    if (motion) {
+      const pulse = 1 + Math.sin(now * 0.0011) * 0.08
+      for (const sprite of coreGlow) sprite.material.opacity *= pulse
+    }
     publishLabels()
     if (hoveredId !== null) publishHover()
     renderer.render(scene, camera)
@@ -674,8 +649,7 @@ export function createScene(options: {
       motion = enabled
       controls.enableDamping = enabled
       if (!enabled) {
-        const dustMaterial = dust.points.material as THREE.PointsMaterial
-        dustMaterial.opacity = 0.62
+        ;(spiral.material as THREE.PointsMaterial).opacity = 0.9
         controls.update()
       }
     },
@@ -694,32 +668,38 @@ export function createScene(options: {
   }
 }
 
-function createDisk(
+function createSpiral(
   count: number,
-  seed: number,
   radius: number,
-  thickness: number,
-  color: string,
-  size: number,
   map: THREE.Texture,
-): { points: THREE.Points } {
+  size = 1.15,
+  opacity = 0.78,
+): THREE.Points {
+  const arms = 4
+  const twist = 4.6
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
-  const random = mulberry(seed)
-  const base = new THREE.Color(color)
+  const random = mulberry(0x51a7e1 ^ count)
+  const core = new THREE.Color('#f4fbff')
+  const mid = new THREE.Color('#7dffe2')
+  const rim = new THREE.Color('#2f6dff')
   for (let index = 0; index < count; index += 1) {
-    const arm = index % 2
-    const along = random()
-    const angle = along * Math.PI * 5.5 + arm * Math.PI + (random() - 0.5) * 0.5
-    const distance = 4 + along ** 0.9 * radius
-    const jitter = (random() - 0.5) * (4 + along * 10)
-    positions[index * 3] = Math.cos(angle) * distance + Math.cos(angle + Math.PI / 2) * jitter
-    positions[index * 3 + 1] = (random() - 0.5) * thickness * (0.35 + along)
-    positions[index * 3 + 2] = Math.sin(angle) * distance + Math.sin(angle + Math.PI / 2) * jitter
-    const tint = base.clone().multiplyScalar(0.45 + random() * 0.75)
-    colors[index * 3] = tint.r
-    colors[index * 3 + 1] = tint.g
-    colors[index * 3 + 2] = tint.b
+    const along = random() < 0.42 ? random() ** 1.65 : random()
+    const arm = index % arms
+    const spread = 0.08 + along * 0.26
+    const angle = arm * ((Math.PI * 2) / arms) + along * twist + (random() - 0.5) * spread
+    const distance = 2.5 + along * radius
+    const lift = (random() - 0.5) * (0.7 + along * 2.4)
+    positions[index * 3] = Math.cos(angle) * distance
+    positions[index * 3 + 1] = lift
+    positions[index * 3 + 2] = Math.sin(angle) * distance
+    const color = new THREE.Color()
+    if (along < 0.18) color.copy(core).lerp(mid, along / 0.18)
+    else color.copy(mid).lerp(rim, (along - 0.18) / 0.82)
+    color.multiplyScalar(0.72 + random() * 0.45)
+    colors[index * 3] = color.r
+    colors[index * 3 + 1] = color.g
+    colors[index * 3 + 2] = color.b
   }
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
@@ -731,10 +711,33 @@ function createDisk(
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    opacity: 0.62,
+    opacity,
     sizeAttenuation: true,
+    fog: false,
   })
-  return { points: new THREE.Points(geometry, material) }
+  return new THREE.Points(geometry, material)
+}
+
+function createCoreGlow(): THREE.Sprite[] {
+  const layers: Array<[string, string, number, number]> = [
+    ['rgba(255,255,255,0.95)', 'rgba(190,255,236,0)', 11, 1],
+    ['rgba(150,255,220,0.7)', 'rgba(40,140,255,0)', 26, 0.62],
+    ['rgba(50,110,255,0.28)', 'rgba(0,0,0,0)', 48, 0.22],
+  ]
+  return layers.map(([inner, outer, scale, opacity]) => {
+    const material = new THREE.SpriteMaterial({
+      map: nebulaTexture(inner, outer),
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      opacity,
+      fog: false,
+    })
+    const sprite = new THREE.Sprite(material)
+    sprite.scale.set(scale, scale, 1)
+    sprite.userData.baseOpacity = opacity
+    return sprite
+  })
 }
 
 function createSky(count: number, map: THREE.Texture): THREE.Points {
@@ -742,7 +745,7 @@ function createSky(count: number, map: THREE.Texture): THREE.Points {
   const colors = new Float32Array(count * 3)
   const random = mulberry(0xc0ffee)
   for (let index = 0; index < count; index += 1) {
-    const radius = 150 + random() * 260
+    const radius = 180 + random() * 320
     const theta = random() * Math.PI * 2
     const phi = Math.acos(2 * random() - 1)
     positions[index * 3] = radius * Math.sin(phi) * Math.cos(theta)
@@ -759,7 +762,7 @@ function createSky(count: number, map: THREE.Texture): THREE.Points {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
   const material = new THREE.PointsMaterial({
     map,
-    size: 1.15,
+    size: 0.85,
     vertexColors: true,
     transparent: true,
     depthWrite: false,

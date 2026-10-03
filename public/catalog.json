@@ -1,15 +1,29 @@
 {
-  "syncedAt": "2026-10-02T13:56:50.443Z",
+  "syncedAt": "2026-10-03T06:45:19.485Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 3,
-  "expectedCount": 3,
-  "fetchedCount": 11,
-  "publicRepos": 11,
+  "count": 6,
+  "expectedCount": 6,
+  "fetchedCount": 14,
+  "publicRepos": 14,
   "excludedCount": 8,
   "pagesFetched": 1,
   "repos": [
+    {
+      "id": 1402675673,
+      "name": "command-world",
+      "description": "Tablero local de proyectos con mapa: edificios, misiones y caja simple. Sin cuentas externas.",
+      "language": "Python",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/command-world",
+      "pushedAt": "2026-10-03T06:23:05Z"
+    },
     {
       "id": 1400902908,
       "name": "Espectro",
@@ -39,6 +53,20 @@
       "pushedAt": "2026-10-02T02:57:17Z"
     },
     {
+      "id": 1402589889,
+      "name": "kino-lab",
+      "description": "Laboratorio local de azar y Kino. No predice sorteos. Flask + SQLite, sin cuentas.",
+      "language": "Python",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/kino-lab",
+      "pushedAt": "2026-10-03T03:07:19Z"
+    },
+    {
       "id": 1399164453,
       "name": "limpieza",
       "description": "Intelligent, safe disk cleaner for Windows and Linux (CLI + GUI)",
@@ -51,6 +79,28 @@
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/limpieza",
       "pushedAt": "2026-10-02T02:36:21Z"
+    },
+    {
+      "id": 1402625285,
+      "name": "navier-stokes-ai-lab",
+      "description": "AI-assisted Navier-Stokes numerical experiments, verification tooling, and lessons from an ambitious exploration. Not a Millennium Prize solution.",
+      "language": "Python",
+      "topics": [
+        "ai-assisted-research",
+        "lean4",
+        "navier-stokes",
+        "open-science",
+        "pseudospectral",
+        "scientific-computing",
+        "verification"
+      ],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/navier-stokes-ai-lab",
+      "pushedAt": "2026-10-03T05:51:52Z"
     }
   ]
 }

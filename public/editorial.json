@@ -1,5 +1,5 @@
 {
-  "featured": ["Espectro", "limpieza", "impulso"],
+  "featured": ["Espectro", "limpieza", "impulso", "command-world", "kino-lab", "navier-stokes-ai-lab"],
   "projects": {
     "Espectro": {
       "does": "El micrófono del computador escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para conservar el intercambio completo.",
@@ -31,6 +31,29 @@
         "src": "https://raw.githubusercontent.com/FernandoLizana/impulso/master/docs/capturas/explorar-claro.png",
         "alt": "Explorar el catálogo de Impulso por categoría"
       }
+    },
+    "command-world": {
+      "does": "Tablero local para varios proyectos. El mapa muestra cada proyecto como un edificio, cada tarea como una misión y el dinero en una caja. Los datos quedan en SQLite, en el equipo.",
+      "points": [
+        "No hay cuenta en la nube ni telemetría.",
+        "El nombre del mundo, la moneda y los proyectos los define quien lo usa."
+      ],
+      "built": ["Python", "SQLite"]
+    },
+    "kino-lab": {
+      "does": "Laboratorio local de históricos, probabilidades y simulaciones de Kino. No predice el próximo sorteo.",
+      "points": [
+        "Corre en el equipo, sin cuenta y sin telemetría.",
+        "Sirve para ver qué se puede concluir a partir de datos y fórmulas, y qué no."
+      ],
+      "built": ["Python", "Flask", "SQLite"]
+    },
+    "navier-stokes-ai-lab": {
+      "does": "Laboratorio de experimentos numéricos y verificación, con ayuda de IA, alrededor de las ecuaciones de Navier-Stokes. No afirma una solución del problema del milenio.",
+      "points": [
+        "Documenta código, enfoques que no funcionaron y límites que siguen abiertos."
+      ],
+      "built": ["Python"]
     }
   }
 }

@@ -115,9 +115,9 @@ export function frameHome(positions: Vec3[]): { position: Vec3; target: Vec3 } {
   return {
     target,
     position: {
-      x: target.x + distance * 0.08,
-      y: target.y + distance * 0.42,
-      z: target.z + distance,
+      x: target.x + distance * 0.16,
+      y: target.y + distance * 0.62,
+      z: target.z + distance * 1.08,
     },
   }
 }
