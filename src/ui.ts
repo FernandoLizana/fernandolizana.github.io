@@ -9,7 +9,6 @@ import {
   visibleRepos,
 } from './catalog.ts'
 import { entryFor, featuredRepos, type Editorial } from './editorial.ts'
-import { bindMusic } from './music.ts'
 import { colorForLanguage } from './groups.ts'
 import type { SceneLabel } from './scene.ts'
 import type { Catalog, FilterState, Repo } from './types.ts'
@@ -132,7 +131,6 @@ export function mountUi(options: {
   const viewGalaxy = required<HTMLButtonElement>('#view-galaxy')
   const viewToggle = required<HTMLButtonElement>('#view-toggle')
   const motionButton = required<HTMLButtonElement>('#motion')
-  const musicButton = required<HTMLButtonElement>('#music')
   const resetButton = required<HTMLButtonElement>('#reset-view')
   const hoverLabel = required<HTMLParagraphElement>('#hover-label')
   const canvas = required<HTMLCanvasElement>('#galaxy')
@@ -140,7 +138,6 @@ export function mountUi(options: {
   const featuredGrid = required<HTMLDivElement>('#featured-grid')
 
   paintMotion(options.motion)
-  bindMusic(musicButton)
   const synced = formatDay(catalog.syncedAt)
   sync.textContent = synced ? `Sincronizado el ${synced} (UTC).` : 'Sin fecha de sincronización.'
   coverage.textContent = catalog.excludedCount

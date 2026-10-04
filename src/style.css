@@ -307,7 +307,7 @@ h1 span { display: block; color: #d5deea; }
 .segmented { display: inline-flex; padding: 2px; border-radius: 999px; border: 1px solid var(--line); }
 .segmented button { border: 0; }
 .segmented button[aria-pressed="true"] { background: var(--ink); color: #10151d; }
-#motion[aria-pressed="false"], #music[aria-pressed="true"] { color: var(--cyan); }
+#motion[aria-pressed="false"] { color: var(--cyan); }
 #count {
   margin: 0 0 0 auto;
   color: var(--quiet);
