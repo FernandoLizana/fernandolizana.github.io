@@ -1,12 +1,12 @@
 {
-  "syncedAt": "2026-10-03T07:02:05.959Z",
+  "syncedAt": "2026-10-04T03:19:27.301Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 6,
-  "expectedCount": 6,
-  "fetchedCount": 14,
-  "publicRepos": 14,
+  "count": 7,
+  "expectedCount": 7,
+  "fetchedCount": 15,
+  "publicRepos": 15,
   "excludedCount": 8,
   "pagesFetched": 1,
   "repos": [
@@ -107,6 +107,21 @@
       "htmlUrl": "https://github.com/FernandoLizana/navier-stokes-ai-lab",
       "pushedAt": "2026-10-03T05:51:52Z",
       "fileCount": 1068
+    },
+    {
+      "id": 1403831763,
+      "name": "nexo-cerebro",
+      "description": "Laboratorio local de agentes cognitivos. Nexus y Nira, en tu maquina.",
+      "language": "Python",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/nexo-cerebro",
+      "pushedAt": "2026-10-04T03:10:12Z",
+      "fileCount": 1467
     }
   ]
 }
