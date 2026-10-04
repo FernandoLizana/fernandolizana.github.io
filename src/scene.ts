@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { buildStarLayout, colorForLanguage, constellationPairs, frameHome, planetRadius } from './groups.ts'
-import { playTakeoff, stopTakeoff } from './music.ts'
 import type { Repo } from './types.ts'
 
 const HOME_POS = new THREE.Vector3(0, 12, 54)
@@ -480,7 +479,6 @@ export function createScene(options: {
   function abortFlight() {
     if (!flight) return
     flight = null
-    stopTakeoff()
     camera.up.set(0, 1, 0)
     camera.lookAt(controls.target)
     controls.enabled = true
@@ -677,8 +675,7 @@ export function createScene(options: {
       if (!record || !record.halo.visible) return
       selectedId = id
       applyScale()
-      const duration = flyTo(approachPosition(camera.position, record.position, record.baseCore), record.position.clone(), animate)
-      playTakeoff(duration)
+      flyTo(approachPosition(camera.position, record.position, record.baseCore), record.position.clone(), animate)
     },
     clearSelection() {
       selectedId = null
@@ -687,7 +684,6 @@ export function createScene(options: {
     resetView(animate) {
       selectedId = null
       applyScale()
-      stopTakeoff()
       flyTo(homePos.clone(), homeTarget.clone(), animate)
     },
     setMotion(enabled) {
