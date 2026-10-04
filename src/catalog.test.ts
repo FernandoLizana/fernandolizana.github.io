@@ -24,6 +24,7 @@ function repo(overrides: Partial<Repo> = {}): Repo {
     homepage: null,
     htmlUrl: 'https://github.com/FernandoLizana/leucode',
     pushedAt: '2026-04-11T16:43:43Z',
+    fileCount: 4,
     ...overrides,
   }
 }

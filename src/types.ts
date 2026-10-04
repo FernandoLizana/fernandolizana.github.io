@@ -11,6 +11,7 @@ export type Repo = {
   homepage: string | null
   htmlUrl: string
   pushedAt: string | null
+  fileCount: number
 }
 
 export type Catalog = {

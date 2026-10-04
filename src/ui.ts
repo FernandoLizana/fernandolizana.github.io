@@ -74,6 +74,10 @@ function kindLabel(repo: Repo): string {
   return 'Repositorio propio'
 }
 
+function fileLabel(count: number): string {
+  return count === 1 ? '1 archivo' : `${count} archivos`
+}
+
 export function mountUi(options: {
   catalog: Catalog
   editorial: Editorial
@@ -240,7 +244,7 @@ export function mountUi(options: {
     article.append(description)
     const meta = document.createElement('p')
     meta.className = 'quiet'
-    meta.textContent = [kindLabel(repo), repo.language ?? 'Sin lenguaje principal'].join(' · ')
+    meta.textContent = [kindLabel(repo), repo.language ?? 'Sin lenguaje principal', fileLabel(repo.fileCount)].join(' · ')
     article.append(meta)
     if (entry?.image) {
       const image = document.createElement('img')
@@ -414,7 +418,10 @@ export function mountUi(options: {
     detailStack.textContent = built.join(' · ')
     detailBuilt.hidden = built.length === 0
     detailMeta.replaceChildren()
-    const rows: Array<[string, string]> = [['Lenguaje principal', repo.language ?? 'Sin lenguaje principal']]
+    const rows: Array<[string, string]> = [
+      ['Lenguaje principal', repo.language ?? 'Sin lenguaje principal'],
+      ['Archivos', fileLabel(repo.fileCount)],
+    ]
     if (repo.stargazersCount > 0) rows.push(['Estrellas en GitHub', String(repo.stargazersCount)])
     if (repo.forksCount > 0) rows.push(['Bifurcaciones', String(repo.forksCount)])
     for (const [term, value] of rows) {

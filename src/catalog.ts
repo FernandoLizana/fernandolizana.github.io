@@ -61,6 +61,9 @@ export function parseCatalog(data: unknown): Catalog {
     if (repo.homepage !== null && !isHttpUrl(repo.homepage)) {
       throw new Error(`El repositorio ${repo.name} tiene una página de inicio inválida.`)
     }
+    if (!Number.isInteger(repo.fileCount) || repo.fileCount < 0) {
+      throw new Error(`El repositorio ${repo.name} no tiene un conteo de archivos válido.`)
+    }
   }
   return catalog as Catalog
 }

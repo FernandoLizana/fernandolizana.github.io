@@ -39,7 +39,22 @@ export function normalizeRepo(repo) {
     homepage: validHomepage(repo.homepage),
     htmlUrl: repo.html_url,
     pushedAt: typeof repo.pushed_at === 'string' ? repo.pushed_at : null,
+    defaultBranch: typeof repo.default_branch === 'string' && repo.default_branch.trim() ? repo.default_branch.trim() : 'HEAD',
   }
+}
+
+export function countBlobFiles(tree) {
+  if (!tree || typeof tree !== 'object' || !Array.isArray(tree.tree)) {
+    throw new Error('El árbol del repositorio no tiene una lista de archivos.')
+  }
+  if (tree.truncated === true) {
+    throw new Error('El árbol del repositorio vino truncado.')
+  }
+  let count = 0
+  for (const entry of tree.tree) {
+    if (entry?.type === 'blob') count += 1
+  }
+  return count
 }
 
 async function readJson(response) {
@@ -136,6 +151,9 @@ export function validateCatalog(catalog) {
     if (repo.homepage !== null && (typeof repo.homepage !== 'string' || !/^https?:\/\//.test(repo.homepage))) {
       errors.push(`Página de inicio inválida en ${repo.name}.`)
     }
+    if (!Number.isInteger(repo.fileCount) || repo.fileCount < 0) {
+      errors.push(`Falta el conteo de archivos en ${repo.name}.`)
+    }
   }
   if (catalog.count === 0 && catalog.fetchedCount !== catalog.excludedCount) {
     errors.push('El catálogo está vacío sin una descarga completa que lo justifique.')
@@ -197,6 +215,20 @@ export async function fetchAllRepos({
   const hidden = new Set(excludedNames)
   const sorted = repos.sort((a, b) => a.name.localeCompare(b.name, 'en'))
   const visible = sorted.filter((repo) => !hidden.has(repo.name))
+  for (const repo of visible) {
+    const branch = encodeURIComponent(repo.defaultBranch || 'HEAD')
+    const tree = await requestJson(
+      `https://api.github.com/repos/${user}/${encodeURIComponent(repo.name)}/git/trees/${branch}?recursive=1`,
+      { fetchImpl, headers, sleep },
+    )
+    try {
+      repo.fileCount = countBlobFiles(tree)
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : 'árbol inválido'
+      throw new Error(`${repo.name}: ${reason} No se reemplaza el catálogo.`)
+    }
+    delete repo.defaultBranch
+  }
   const catalog = {
     syncedAt: now().toISOString(),
     owner: user,

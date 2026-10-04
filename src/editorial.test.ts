@@ -17,6 +17,7 @@ function repo(name: string, id: number): Repo {
     homepage: null,
     htmlUrl: `https://github.com/FernandoLizana/${name}`,
     pushedAt: null,
+    fileCount: 3,
   }
 }
 
