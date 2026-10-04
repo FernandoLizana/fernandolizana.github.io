@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { buildStarLayout, constellationPairs, frameHome, repoPosition, sectorAngle } from './groups.ts'
+import { buildStarLayout, constellationPairs, frameHome, planetRadius, repoPosition, sectorAngle } from './groups.ts'
+
+test('el radio del planeta es proporcional a sus archivos', () => {
+  assert.equal(planetRadius(40, 80), planetRadius(20, 80) * 2)
+  assert.equal(planetRadius(80, 80), 9)
+  assert.equal(planetRadius(0, 80), 0)
+  assert.equal(planetRadius(12, 0), 0)
+})
 
 test('la posición depende solo del id y del lenguaje', () => {
   const first = repoPosition(1207539070, 'JavaScript')

@@ -1,11 +1,11 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { buildStarLayout, colorForLanguage, constellationPairs, frameHome } from './groups.ts'
+import { buildStarLayout, colorForLanguage, constellationPairs, frameHome, planetRadius } from './groups.ts'
+import { playTakeoff, stopTakeoff } from './music.ts'
 import type { Repo } from './types.ts'
 
 const HOME_POS = new THREE.Vector3(0, 12, 54)
 const HOME_TARGET = new THREE.Vector3(0, 0, 0)
-const FOCUS_OFFSET = new THREE.Vector3(7, 8, 18)
 
 export type HoverHit = {
   id: number
@@ -55,6 +55,7 @@ type StarRecord = {
 
 type Flight = {
   fromPos: THREE.Vector3
+  control: THREE.Vector3
   toPos: THREE.Vector3
   fromTarget: THREE.Vector3
   toTarget: THREE.Vector3
@@ -196,7 +197,7 @@ export function createScene(options: {
   renderer.toneMapping = THREE.NoToneMapping
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 900)
+  const camera = new THREE.PerspectiveCamera(58, 1, 0.12, 900)
   camera.position.copy(HOME_POS)
 
   const controls = new OrbitControls(camera, options.canvas)
@@ -206,7 +207,7 @@ export function createScene(options: {
   controls.enablePan = false
   controls.rotateSpeed = 0.65
   controls.zoomSpeed = 0.7
-  controls.minDistance = 16
+  controls.minDistance = 2.4
   controls.maxDistance = 120
   options.canvas.addEventListener(
     'wheel',
@@ -234,8 +235,13 @@ export function createScene(options: {
   decor.rotation.x = 0.38
 
   const featured = new Set(options.featuredIds)
+  const cockpit = createCockpit()
+  camera.add(cockpit)
+  scene.add(camera)
 
   const layouts = buildStarLayout(options.repos)
+  const maxFiles = Math.max(1, ...options.repos.map((repo) => repo.fileCount))
+  const filesById = new Map(options.repos.map((repo) => [repo.id, repo.fileCount]))
   const byId = new Map<number, StarRecord>()
   const pickables: THREE.Sprite[] = []
   const coreCache = new Map<string, THREE.Texture>()
@@ -255,9 +261,10 @@ export function createScene(options: {
       haloCache.set(hex, haloMap)
     }
     const position = new THREE.Vector3(layout.position.x, layout.position.y, layout.position.z)
-    const emphasis = featured.has(layout.id) ? 1.22 : 1
-    const baseHalo = 11 * quality.starScale * emphasis
-    const baseCore = (layout.fork ? 3.6 : 2.8) * quality.starScale * emphasis
+    const counted = planetRadius(filesById.get(layout.id) ?? 0, maxFiles)
+    const radius = (counted > 0 ? counted : 0.36) * quality.starScale
+    const baseHalo = radius * 2.15
+    const baseCore = radius
     const halo = new THREE.Sprite(
       new THREE.SpriteMaterial({
         map: haloMap,
@@ -285,8 +292,19 @@ export function createScene(options: {
     core.renderOrder = 3
     halo.userData = { id: layout.id }
     core.userData = { id: layout.id }
-    projects.add(halo, core)
-    pickables.push(halo, core)
+    const pick = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        fog: false,
+      }),
+    )
+    pick.position.copy(position)
+    pick.scale.setScalar(Math.max(baseHalo, 7.5))
+    pick.userData = { id: layout.id }
+    projects.add(halo, core, pick)
+    pickables.push(halo, core, pick)
     byId.set(layout.id, {
       id: layout.id,
       name: layout.name,
@@ -346,17 +364,15 @@ export function createScene(options: {
     renderer.setSize(width, height, false)
     camera.aspect = width / Math.max(height, 1)
     camera.updateProjectionMatrix()
+    fitCockpit(cockpit, camera)
   }
 
   function applyScale() {
     const focused = selectedId !== null
     for (const record of byId.values()) {
       const selected = record.id === selectedId
-      const distance = Math.max(camera.position.distanceTo(record.position), 1)
-      const boost = Math.min(1.55, Math.max(0.88, distance / 78))
-      const factor = (selected ? 1.28 : 1) * boost
-      record.core.scale.setScalar(record.baseCore * factor)
-      record.halo.scale.setScalar(record.baseHalo * factor)
+      record.core.scale.setScalar(record.baseCore)
+      record.halo.scale.setScalar(record.baseHalo)
       const coreMaterial = record.core.material as THREE.SpriteMaterial
       const haloMaterial = record.halo.material as THREE.SpriteMaterial
       const dim = focused && !selected
@@ -408,36 +424,54 @@ export function createScene(options: {
     lines.geometry = lineGeometry
   }
 
-  function flyTo(position: THREE.Vector3, target: THREE.Vector3, animate: boolean) {
+  function flyTo(position: THREE.Vector3, target: THREE.Vector3, animate: boolean): number {
     if (!animate) {
       flight = null
+      camera.up.set(0, 1, 0)
       camera.position.copy(position)
       controls.target.copy(target)
       camera.lookAt(controls.target)
       controls.enabled = true
       controls.update()
-      return
+      return 700
     }
+    const fromPos = camera.position.clone()
+    const travel = fromPos.distanceTo(position)
+    const duration = Math.min(2800, Math.max(1200, travel * 24))
+    const control = fromPos.clone().lerp(position, 0.42)
+    const side = new THREE.Vector3().crossVectors(position.clone().sub(fromPos), new THREE.Vector3(0, 1, 0))
+    if (side.lengthSq() < 1e-4) side.set(1, 0, 0)
+    side.normalize()
+    control.addScaledVector(side, Math.min(8, travel * 0.12))
+    control.y += Math.min(4, travel * 0.05)
     flight = {
-      fromPos: camera.position.clone(),
+      fromPos,
+      control,
       toPos: position.clone(),
       fromTarget: controls.target.clone(),
       toTarget: target.clone(),
       start: performance.now(),
-      duration: 880,
+      duration,
     }
     controls.enabled = false
+    return duration
   }
 
   function stepFlight(now: number) {
     if (!flight) return
     const progress = Math.min(1, (now - flight.start) / flight.duration)
     const eased = progress * progress * (3 - 2 * progress)
-    camera.position.lerpVectors(flight.fromPos, flight.toPos, eased)
+    const left = flight.fromPos.clone().lerp(flight.control, eased)
+    const right = flight.control.clone().lerp(flight.toPos, eased)
+    camera.position.copy(left.lerp(right, eased))
     controls.target.lerpVectors(flight.fromTarget, flight.toTarget, eased)
+    const bank = Math.sin(eased * Math.PI) * 0.22
+    camera.up.set(Math.sin(bank), Math.cos(bank), 0)
     camera.lookAt(controls.target)
     if (progress >= 1) {
       flight = null
+      camera.up.set(0, 1, 0)
+      camera.lookAt(controls.target)
       controls.enabled = true
       controls.update()
     }
@@ -446,6 +480,9 @@ export function createScene(options: {
   function abortFlight() {
     if (!flight) return
     flight = null
+    stopTakeoff()
+    camera.up.set(0, 1, 0)
+    camera.lookAt(controls.target)
     controls.enabled = true
     controls.update()
   }
@@ -535,6 +572,12 @@ export function createScene(options: {
 
   function render(now: number) {
     const delta = Math.min(clock.getDelta(), 0.05)
+    if (motion && !flight) {
+      const bob = Math.sin(now * 0.0013) * 0.004
+      cockpit.position.y = bob
+    } else {
+      cockpit.position.y = 0
+    }
     if (motion) spin += delta * 0.04
     decor.rotation.y = spin
     stepFlight(now)
@@ -634,7 +677,8 @@ export function createScene(options: {
       if (!record || !record.halo.visible) return
       selectedId = id
       applyScale()
-      flyTo(record.position.clone().add(FOCUS_OFFSET), record.position.clone(), animate)
+      const duration = flyTo(approachPosition(camera.position, record.position, record.baseCore), record.position.clone(), animate)
+      playTakeoff(duration)
     },
     clearSelection() {
       selectedId = null
@@ -643,6 +687,7 @@ export function createScene(options: {
     resetView(animate) {
       selectedId = null
       applyScale()
+      stopTakeoff()
       flyTo(homePos.clone(), homeTarget.clone(), animate)
     },
     setMotion(enabled) {
@@ -666,6 +711,80 @@ export function createScene(options: {
       renderer.dispose()
     },
   }
+}
+
+function approachPosition(from: THREE.Vector3, planet: THREE.Vector3, radius: number): THREE.Vector3 {
+  const away = from.clone().sub(planet)
+  if (away.lengthSq() < 0.25) away.set(0.25, 0.18, 1)
+  away.normalize()
+  const gap = 11 + radius * 0.45
+  const position = planet.clone().addScaledVector(away, gap)
+  position.y += gap * 0.06
+  return position
+}
+
+function canopyMaterial(color: number, opacity = 1): THREE.MeshBasicMaterial {
+  const material = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity,
+    depthTest: false,
+    depthWrite: false,
+  })
+  return material
+}
+
+function canopyBar(group: THREE.Group, material: THREE.Material): THREE.Mesh {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material)
+  mesh.frustumCulled = false
+  mesh.renderOrder = 20
+  group.add(mesh)
+  return mesh
+}
+
+function createCockpit(): THREE.Group {
+  const group = new THREE.Group()
+  const frame = canopyMaterial(0x162033)
+  const lip = canopyMaterial(0x8ef6e4, 0.9)
+  const lamp = canopyMaterial(0xd7fff6)
+  const meshes = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, frame))
+  const lips = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, lip))
+  const lamps = [0, 1, 2, 3, 4].map(() => canopyBar(group, lamp))
+  group.userData = { meshes, lips, lamps }
+  return group
+}
+
+function fitCockpit(group: THREE.Group, camera: THREE.PerspectiveCamera) {
+  const meshes = group.userData.meshes as THREE.Mesh[]
+  const lips = group.userData.lips as THREE.Mesh[]
+  const lamps = group.userData.lamps as THREE.Mesh[]
+  const [left, right, top, bottom] = meshes
+  const [lipLeft, lipRight, lipTop, lipBottom] = lips
+  const z = -0.84
+  const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.abs(z)
+  const halfW = halfH * camera.aspect
+  const thickness = Math.max(halfH, halfW) * 0.2
+  const lipSize = thickness * 0.08
+  left.position.set(-halfW + thickness * 0.42, 0, z)
+  left.scale.set(thickness, halfH * 2.05, 0.02)
+  right.position.set(halfW - thickness * 0.42, 0, z)
+  right.scale.set(thickness, halfH * 2.05, 0.02)
+  top.position.set(0, halfH - thickness * 0.28, z)
+  top.scale.set(halfW * 2.05, thickness * 0.7, 0.02)
+  bottom.position.set(0, -halfH + thickness * 0.72, z)
+  bottom.scale.set(halfW * 2.05, thickness * 1.7, 0.02)
+  lipLeft.position.set(-halfW + thickness * 0.9, 0, z + 0.01)
+  lipLeft.scale.set(lipSize, halfH * 1.7, 0.01)
+  lipRight.position.set(halfW - thickness * 0.9, 0, z + 0.01)
+  lipRight.scale.set(lipSize, halfH * 1.7, 0.01)
+  lipTop.position.set(0, halfH - thickness * 0.62, z + 0.01)
+  lipTop.scale.set(halfW * 1.7, lipSize, 0.01)
+  lipBottom.position.set(0, -halfH + thickness * 1.52, z + 0.01)
+  lipBottom.scale.set(halfW * 1.7, lipSize, 0.01)
+  lamps.forEach((item, index) => {
+    item.position.set((index - 2) * thickness * 0.85, -halfH + thickness * 0.72, z + 0.02)
+    item.scale.set(thickness * 0.28, thickness * 0.07, 0.01)
+  })
 }
 
 function createSpiral(

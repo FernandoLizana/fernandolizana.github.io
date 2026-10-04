@@ -3,7 +3,7 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
-import { fetchAllRepos, publishCatalog, syncToFile } from './sync-catalog.mjs'
+import { countBlobFiles, fetchAllRepos, publishCatalog, syncToFile } from './sync-catalog.mjs'
 
 function repo(id, extra = {}) {
   return {
@@ -40,6 +40,14 @@ function api(pages, userCount = pages.flat().length) {
     if (url === 'https://api.github.com/users/FernandoLizana') {
       return response(200, { public_repos: userCount, login: 'FernandoLizana' })
     }
+    if (url.includes('/git/trees/')) {
+      const name = decodeURIComponent(url.split('/repos/FernandoLizana/')[1].split('/')[0])
+      const id = Number(name.replace('repo-', ''))
+      const blobs = Number.isInteger(id) && id > 0 ? id : 2
+      const tree = Array.from({ length: blobs }, (_, index) => ({ type: 'blob', path: `archivo-${index}` }))
+      tree.push({ type: 'tree', path: 'src' })
+      return response(200, { truncated: false, tree })
+    }
     const page = Number(new URL(url).searchParams.get('page'))
     assert.match(url, /type=owner/)
     assert.match(url, /per_page=100/)
@@ -52,6 +60,11 @@ async function tempFile() {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'universo-'))
   return path.join(dir, 'catalog.json')
 }
+
+test('cuenta archivos y rechaza un árbol truncado', () => {
+  assert.equal(countBlobFiles({ truncated: false, tree: [{ type: 'blob' }, { type: 'tree' }, { type: 'blob' }] }), 2)
+  assert.throws(() => countBlobFiles({ truncated: true, tree: [{ type: 'blob' }] }), /truncado/)
+})
 
 test('pagina más de 100 repositorios y conserva fork, archivado y homepage', async () => {
   const first = Array.from({ length: 100 }, (_, index) => repo(index + 1))
@@ -78,6 +91,8 @@ test('pagina más de 100 repositorios y conserva fork, archivado y homepage', as
   assert.equal(catalog.repos.find((item) => item.id === 9).archived, true)
   assert.equal(catalog.repos.find((item) => item.id === 3).language, null)
   assert.equal(catalog.repos.find((item) => item.id === 3).stargazersCount, 0)
+  assert.equal(catalog.repos.find((item) => item.id === 4).fileCount, 4)
+  assert.equal(catalog.repos.some((item) => 'defaultBranch' in item), false)
   assert.equal(seen.filter((url) => url.includes('/repos?')).length, 2)
 })
 

@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-03T12:37:31.073Z",
+  "syncedAt": "2026-10-03T07:02:05.959Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
@@ -22,7 +22,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/command-world",
-      "pushedAt": "2026-10-03T06:23:05Z"
+      "pushedAt": "2026-10-03T06:23:05Z",
+      "fileCount": 225
     },
     {
       "id": 1400902908,
@@ -36,7 +37,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/Espectro",
-      "pushedAt": "2026-10-02T01:39:35Z"
+      "pushedAt": "2026-10-02T01:39:35Z",
+      "fileCount": 24
     },
     {
       "id": 1400968376,
@@ -50,7 +52,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/impulso",
-      "pushedAt": "2026-10-02T02:57:17Z"
+      "pushedAt": "2026-10-02T02:57:17Z",
+      "fileCount": 146
     },
     {
       "id": 1402589889,
@@ -64,7 +67,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/kino-lab",
-      "pushedAt": "2026-10-03T03:07:19Z"
+      "pushedAt": "2026-10-03T03:07:19Z",
+      "fileCount": 154
     },
     {
       "id": 1399164453,
@@ -78,7 +82,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/limpieza",
-      "pushedAt": "2026-10-02T02:36:21Z"
+      "pushedAt": "2026-10-02T02:36:21Z",
+      "fileCount": 20
     },
     {
       "id": 1402625285,
@@ -100,7 +105,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/navier-stokes-ai-lab",
-      "pushedAt": "2026-10-03T05:51:52Z"
+      "pushedAt": "2026-10-03T05:51:52Z",
+      "fileCount": 1068
     }
   ]
 }

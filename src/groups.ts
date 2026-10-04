@@ -122,6 +122,16 @@ export function frameHome(positions: Vec3[]): { position: Vec3; target: Vec3 } {
   }
 }
 
+/**
+ * Radio visual del planeta. Es proporcional a sus archivos:
+ * el repositorio con más archivos del conjunto usa maxRadius y el resto queda en la misma razón.
+ */
+export function planetRadius(fileCount: number, maxFileCount: number, maxRadius = 9): number {
+  if (!Number.isFinite(fileCount) || fileCount <= 0) return 0
+  if (!Number.isFinite(maxFileCount) || maxFileCount <= 0) return 0
+  return maxRadius * (fileCount / maxFileCount)
+}
+
 export function buildStarLayout(
   repos: { id: number; name: string; language: string | null; fork: boolean; archived: boolean }[],
 ): StarLayout[] {
