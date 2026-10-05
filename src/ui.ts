@@ -517,27 +517,12 @@ export function mountUi(options: {
     for (const button of [...starLabels.querySelectorAll<HTMLButtonElement>('button')]) {
       if (!wanted.has(Number(button.dataset.id))) button.remove()
     }
-    const placed: Array<{ x: number; y: number }> = []
-    const floor = Math.max(36, height - 132)
-    const pad = Math.min(72, Math.max(28, width * 0.12))
+    const placed: Array<{ x: number; y: number; half: number }> = []
+    const offsets: Array<[number, number]> = [[0, 0]]
+    for (const ring of [26, 48, 70]) {
+      offsets.push([0, -ring], [0, ring], [-ring, -8], [ring, -8], [-ring, ring], [ring, ring])
+    }
     for (const label of sorted) {
-      const clampX = (value: number) => Math.min(width - pad, Math.max(pad, value))
-      const clampY = (value: number) => Math.min(Math.max(value, 36), floor)
-      let y = clampY(label.y)
-      let x = clampX(label.x)
-      let guard = 0
-      const crowded = (px: number, py: number) =>
-        placed.some((other) => Math.abs(other.x - px) < 168 && Math.abs(other.y - py) < 36)
-      while (guard < 24 && crowded(x, y)) {
-        if (y + 38 <= floor) y += 38
-        else {
-          const lane = Math.ceil((guard + 1) / 2)
-          x = clampX(label.x + 156 * (guard % 2 === 0 ? -1 : 1) * lane)
-          y = clampY(label.y)
-        }
-        guard += 1
-      }
-      placed.push({ x, y })
       let button = starLabels.querySelector<HTMLButtonElement>(`button[data-id="${label.id}"]`)
       if (!button) {
         button = document.createElement('button')
@@ -551,8 +536,28 @@ export function mountUi(options: {
         })
         starLabels.append(button)
       }
-      button.style.left = `${x}px`
-      button.style.top = `${y}px`
+      const half = Math.max(28, button.offsetWidth / 2)
+      const clamp = (x: number, y: number) => ({
+        x: Math.min(width - half - 6, Math.max(half + 6, x)),
+        y: Math.min(height - 12, Math.max(16, y)),
+      })
+      let best = { ...clamp(label.x, label.y), cost: Number.POSITIVE_INFINITY }
+      for (const [dx, dy] of offsets) {
+        const spot = clamp(label.x + dx, label.y + dy)
+        const drift = Math.hypot(spot.x - label.x, spot.y - label.y)
+        let overlap = 0
+        for (const other of placed) {
+          const gapX = (other.half + half) * 0.82 - Math.abs(other.x - spot.x)
+          const gapY = 30 - Math.abs(other.y - spot.y)
+          if (gapX > 0 && gapY > 0) overlap += gapX + gapY
+        }
+        const cost = overlap * 5 + drift
+        if (cost < best.cost) best = { ...spot, cost }
+        if (overlap === 0) break
+      }
+      placed.push({ x: best.x, y: best.y, half })
+      button.style.left = `${best.x}px`
+      button.style.top = `${best.y}px`
       button.classList.toggle('is-dim', openId !== null && openId !== label.id)
       if (openId === label.id) button.setAttribute('aria-current', 'true')
       else button.removeAttribute('aria-current')
