@@ -72,7 +72,7 @@ export async function loadCatalog(): Promise<Catalog> {
   const url = new URL('catalog.json', document.baseURI)
   let response: Response
   try {
-    response = await fetch(url)
+    response = await fetch(url, { cache: 'no-cache' })
   } catch {
     throw new Error('No se pudo leer el catálogo local de proyectos.')
   }

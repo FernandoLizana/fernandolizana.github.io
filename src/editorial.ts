@@ -71,7 +71,7 @@ export function parseEditorial(data: unknown): Editorial {
 
 export async function loadEditorial(): Promise<Editorial> {
   try {
-    const response = await fetch(new URL('editorial.json', document.baseURI))
+    const response = await fetch(new URL('editorial.json', document.baseURI), { cache: 'no-cache' })
     if (!response.ok) return emptyEditorial
     return parseEditorial(await response.json())
   } catch {
