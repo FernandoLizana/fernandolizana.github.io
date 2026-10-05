@@ -1,5 +1,5 @@
 {
-  "featured": ["Espectro", "limpieza", "impulso", "command-world", "kino-lab", "navier-stokes-ai-lab"],
+  "featured": ["Espectro", "limpieza", "impulso", "command-world", "loteria-lab", "navier-stokes-ai-lab", "centralizado", "mi-gestor", "mosca", "nexo-cerebro", "el-tejido-arcano"],
   "projects": {
     "Espectro": {
       "does": "El micrófono del computador escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para conservar el intercambio completo.",
@@ -40,13 +40,51 @@
       ],
       "built": ["Python", "SQLite"]
     },
-    "kino-lab": {
-      "does": "Laboratorio local de históricos, probabilidades y simulaciones de Kino. No predice el próximo sorteo.",
+    "loteria-lab": {
+      "does": "Laboratorio local de loterías: históricos, probabilidades, simulaciones y experimentos reproducibles. Incluye Kino y otros juegos. No predice el próximo sorteo.",
       "points": [
-        "Corre en el equipo, sin cuenta y sin telemetría.",
-        "Sirve para ver qué se puede concluir a partir de datos y fórmulas, y qué no."
+        "Corre en el equipo con Flask y SQLite, sin cuenta y sin telemetría.",
+        "Separa el histórico, el cálculo, la simulación y el experimento."
       ],
       "built": ["Python", "Flask", "SQLite"]
+    },
+    "centralizado": {
+      "does": "Página portable que junta cuatro piezas. El arte y el desarrollo van en la misma superficie. No ejecuta esas obras: muestra una miniatura de cada una.",
+      "points": [
+        "No tiene dependencias, ni cuentas, ni guarda datos.",
+        "Se copia la carpeta y se abre."
+      ],
+      "built": ["JavaScript"]
+    },
+    "mi-gestor": {
+      "does": "CRM local para un equipo pequeño: a quién escribir, en qué etapa está cada oportunidad, qué hay que entregar y qué ventas quedaron registradas.",
+      "points": [
+        "La base es un archivo SQLite. No hace falta una cuenta externa.",
+        "MySQL y la inteligencia artificial son opcionales."
+      ],
+      "built": ["Python", "Flask", "SQLite"]
+    },
+    "mosca": {
+      "does": "Laboratorio 3D en el navegador para explorar cómo una mosca de la fruta puede percibir un entorno y cómo un agente simple aprende. No es un simulador completo del cerebro.",
+      "points": [
+        "No pide cuentas ni guarda datos en la nube."
+      ],
+      "built": ["JavaScript"]
+    },
+    "nexo-cerebro": {
+      "does": "Laboratorio local de agentes cognitivos. Nexus y Nira aprenden de forma distinta, en la máquina. No afirma consciencia, ni una inteligencia general, ni un servicio en la nube.",
+      "points": [
+        "Una asociación no se convierte sola en un hecho verificado.",
+        "Los nodos externos son optativos y lo que llega de fuera entra en cuarentena."
+      ],
+      "built": ["Python"]
+    },
+    "el-tejido-arcano": {
+      "does": "Laboratorio local para explorar relaciones entre los 22 arcanos mayores, con color, símbolos y grafos. No predice el futuro ni da consejo médico, legal o financiero.",
+      "points": [
+        "Corre en el equipo. La comparación de texto, por defecto, no usa una API."
+      ],
+      "built": ["Python"]
     },
     "navier-stokes-ai-lab": {
       "does": "Laboratorio de experimentos numéricos y verificación, con ayuda de IA, alrededor de las ecuaciones de Navier-Stokes. No afirma una solución del problema del milenio.",

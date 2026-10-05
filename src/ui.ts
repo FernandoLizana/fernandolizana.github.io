@@ -519,13 +519,24 @@ export function mountUi(options: {
     }
     const placed: Array<{ x: number; y: number }> = []
     const floor = Math.max(36, height - 132)
+    const pad = Math.min(72, Math.max(28, width * 0.12))
     for (const label of sorted) {
-      let y = Math.min(Math.max(label.y, 36), floor)
-      for (const other of placed) {
-        if (Math.abs(other.x - label.x) < 140 && Math.abs(other.y - y) < 30) y = Math.min(floor, other.y + 32)
+      const clampX = (value: number) => Math.min(width - pad, Math.max(pad, value))
+      const clampY = (value: number) => Math.min(Math.max(value, 36), floor)
+      let y = clampY(label.y)
+      let x = clampX(label.x)
+      let guard = 0
+      const crowded = (px: number, py: number) =>
+        placed.some((other) => Math.abs(other.x - px) < 168 && Math.abs(other.y - py) < 36)
+      while (guard < 24 && crowded(x, y)) {
+        if (y + 38 <= floor) y += 38
+        else {
+          const lane = Math.ceil((guard + 1) / 2)
+          x = clampX(label.x + 156 * (guard % 2 === 0 ? -1 : 1) * lane)
+          y = clampY(label.y)
+        }
+        guard += 1
       }
-      const pad = Math.min(72, Math.max(28, width * 0.12))
-      const x = Math.min(width - pad, Math.max(pad, label.x))
       placed.push({ x, y })
       let button = starLabels.querySelector<HTMLButtonElement>(`button[data-id="${label.id}"]`)
       if (!button) {

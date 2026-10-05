@@ -226,16 +226,30 @@ export function createScene(options: {
   scene.add(decor, projects)
 
   const diskTexture = softDisk()
-  const spiral = createSpiral(quality.dust, 58, diskTexture)
-  const sparks = createSpiral(Math.round(quality.dust * 0.14), 54, diskTexture, 2.6, 0.95)
+  const spiral = createSpiral(quality.dust, 62, diskTexture, 1.35, 0.86, {
+    core: '#fff6e2',
+    mid: '#ffb15a',
+    rim: '#6f8dff',
+  })
+  const veil = createSpiral(Math.round(quality.dust * 0.28), 84, diskTexture, 2.4, 0.34, {
+    core: '#ffd2ea',
+    mid: '#b06bff',
+    rim: '#241448',
+  })
+  const sparks = createSpiral(Math.round(quality.dust * 0.16), 58, diskTexture, 2.8, 0.95, {
+    core: '#ffffff',
+    mid: '#ffe0a8',
+    rim: '#9eb6ff',
+  })
   const sky = createSky(quality.sky, diskTexture)
   const coreGlow = createCoreGlow()
-  decor.add(spiral, sparks, sky, ...coreGlow)
-  decor.rotation.x = 0.38
+  decor.add(veil, spiral, sparks, sky, ...coreGlow)
+  decor.rotation.x = 0.58
 
   const featured = new Set(options.featuredIds)
   const cockpit = createCockpit()
-  camera.add(cockpit)
+  const warp = createWarp(quality.dust > 8000 ? 170 : 80)
+  camera.add(cockpit, warp)
   scene.add(camera)
 
   const layouts = buildStarLayout(options.repos)
@@ -381,9 +395,11 @@ export function createScene(options: {
     lineMaterial.opacity = focused ? 0.16 : 0.34
     const atmosphere = focused ? 0.28 : 1
     const spiralMaterial = spiral.material as THREE.PointsMaterial
+    const veilMaterial = veil.material as THREE.PointsMaterial
     const sparkMaterial = sparks.material as THREE.PointsMaterial
     const skyMaterial = sky.material as THREE.PointsMaterial
-    spiralMaterial.opacity = 0.9 * atmosphere
+    spiralMaterial.opacity = 0.86 * atmosphere
+    veilMaterial.opacity = 0.34 * atmosphere
     sparkMaterial.opacity = 0.95 * atmosphere
     skyMaterial.opacity = 0.7 * atmosphere
     for (const sprite of coreGlow) {
@@ -576,9 +592,12 @@ export function createScene(options: {
     } else {
       cockpit.position.y = 0
     }
-    if (motion) spin += delta * 0.04
+    if (motion) spin += delta * 0.055
     decor.rotation.y = spin
+    veil.rotation.z = -spin * 0.45
     stepFlight(now)
+    const travel = flight ? Math.min(1, (now - flight.start) / flight.duration) : 0
+    stepWarp(warp, delta, motion ? Math.sin(travel * Math.PI) : 0)
     if (!flight) controls.update()
     applyScale()
     if (motion) {
@@ -741,8 +760,8 @@ function canopyBar(group: THREE.Group, material: THREE.Material): THREE.Mesh {
 function createCockpit(): THREE.Group {
   const group = new THREE.Group()
   const frame = canopyMaterial(0x162033)
-  const lip = canopyMaterial(0x8ef6e4, 0.9)
-  const lamp = canopyMaterial(0xd7fff6)
+  const lip = canopyMaterial(0xffd7a1, 0.92)
+  const lamp = canopyMaterial(0xfff1d6)
   const meshes = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, frame))
   const lips = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, lip))
   const lamps = [0, 1, 2, 3, 4].map(() => canopyBar(group, lamp))
@@ -783,21 +802,81 @@ function fitCockpit(group: THREE.Group, camera: THREE.PerspectiveCamera) {
   })
 }
 
+function createWarp(count: number): THREE.LineSegments {
+  const positions = new Float32Array(count * 6)
+  const lengths = new Float32Array(count)
+  const random = mulberry(0x5eed17)
+  for (let index = 0; index < count; index += 1) {
+    const x = (random() - 0.5) * 26
+    const y = (random() - 0.5) * 15
+    const z = -3 - random() * 68
+    const length = 1.4 + random() * 5.5
+    lengths[index] = length
+    const offset = index * 6
+    positions[offset] = x
+    positions[offset + 1] = y
+    positions[offset + 2] = z
+    positions[offset + 3] = x
+    positions[offset + 4] = y
+    positions[offset + 5] = z - length
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+  const material = new THREE.LineBasicMaterial({
+    color: 0xffe2b0,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    fog: false,
+  })
+  const lines = new THREE.LineSegments(geometry, material)
+  lines.frustumCulled = false
+  lines.userData.lengths = lengths
+  return lines
+}
+
+function stepWarp(lines: THREE.LineSegments, delta: number, boost: number) {
+  const material = lines.material as THREE.LineBasicMaterial
+  const rushing = boost > 0.04
+  material.opacity = rushing ? 0.14 + boost * 0.72 : 0
+  if (!rushing) return
+  const speed = 18 + boost * 78
+  const attribute = lines.geometry.getAttribute('position') as THREE.BufferAttribute
+  const lengths = lines.userData.lengths as Float32Array
+  for (let index = 0; index < lengths.length; index += 1) {
+    const vertex = index * 2
+    const x = attribute.getX(vertex)
+    const y = attribute.getY(vertex)
+    let z = attribute.getZ(vertex) + delta * speed
+    if (z > -1.1) z = -48 - Math.random() * 28
+    const length = lengths[index] * (1 + boost * 2.6)
+    attribute.setXYZ(vertex, x, y, z)
+    attribute.setXYZ(vertex + 1, x, y, z - length)
+  }
+  attribute.needsUpdate = true
+}
+
 function createSpiral(
   count: number,
   radius: number,
   map: THREE.Texture,
   size = 1.15,
   opacity = 0.78,
+  palette: { core: string; mid: string; rim: string } = {
+    core: '#fff4dc',
+    mid: '#ffb15a',
+    rim: '#6f8dff',
+  },
 ): THREE.Points {
   const arms = 4
   const twist = 4.6
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const random = mulberry(0x51a7e1 ^ count)
-  const core = new THREE.Color('#f4fbff')
-  const mid = new THREE.Color('#7dffe2')
-  const rim = new THREE.Color('#2f6dff')
+  const core = new THREE.Color(palette.core)
+  const mid = new THREE.Color(palette.mid)
+  const rim = new THREE.Color(palette.rim)
   for (let index = 0; index < count; index += 1) {
     const along = random() < 0.42 ? random() ** 1.65 : random()
     const arm = index % arms
@@ -835,9 +914,9 @@ function createSpiral(
 
 function createCoreGlow(): THREE.Sprite[] {
   const layers: Array<[string, string, number, number]> = [
-    ['rgba(255,255,255,0.95)', 'rgba(190,255,236,0)', 11, 1],
-    ['rgba(150,255,220,0.7)', 'rgba(40,140,255,0)', 26, 0.62],
-    ['rgba(50,110,255,0.28)', 'rgba(0,0,0,0)', 48, 0.22],
+    ['rgba(255,250,240,0.98)', 'rgba(255,186,90,0)', 13, 1],
+    ['rgba(255,140,50,0.72)', 'rgba(70,110,255,0)', 30, 0.5],
+    ['rgba(120,70,190,0.24)', 'rgba(0,0,0,0)', 54, 0.26],
   ]
   return layers.map(([inner, outer, scale, opacity]) => {
     const material = new THREE.SpriteMaterial({
