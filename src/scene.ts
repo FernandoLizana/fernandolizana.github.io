@@ -622,7 +622,7 @@ export function createScene(options: {
         name: record.name,
         x: (projected.x * 0.5 + 0.5) * width,
         y: (-projected.y * 0.5 + 0.5) * height,
-        visible: record.halo.visible && projected.z < 1,
+        visible: record.halo.visible && projected.z < 1 && Math.abs(projected.x) < 1.02 && Math.abs(projected.y) < 1.02,
       })
     }
     options.onLabels(labels)
