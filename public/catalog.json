@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-05T22:28:29.529Z",
+  "syncedAt": "2026-10-06T14:16:36.477Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
@@ -14,7 +14,7 @@
       "id": 1406395406,
       "name": "centralizado",
       "description": "Catalogo experimental portable: arte y desarrollo excentrico en la misma superficie.",
-      "language": "JavaScript",
+      "language": "TypeScript",
       "topics": [],
       "stargazersCount": 0,
       "forksCount": 0,
@@ -22,8 +22,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/centralizado",
-      "pushedAt": "2026-10-05T21:24:53Z",
-      "fileCount": 8
+      "pushedAt": "2026-10-06T01:47:29Z",
+      "fileCount": 222
     },
     {
       "id": 1402675673,
