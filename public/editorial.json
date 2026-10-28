@@ -1,6 +1,18 @@
 {
-  "featured": ["Espectro", "limpieza", "impulso", "command-world", "loteria-lab", "navier-stokes-ai-lab", "centralizado", "mi-gestor", "mosca", "nexo-cerebro", "el-tejido-arcano"],
+  "featured": ["Espectro", "limpieza", "impulso", "command-world", "loteria-lab", "navier-stokes-ai-lab", "centralizado", "mi-gestor", "mosca", "nexo-cerebro", "el-tejido-arcano", "laboratorio-radar"],
   "projects": {
+    "laboratorio-radar": {
+      "does": "Laboratorio local de prospección: busca comercios publicados en OpenStreetMap, los guarda en SQLite y los mueve por un embudo de ventas con un tablero de cifras. No inventa fichas.",
+      "points": [
+        "Corre en el equipo. Los datos quedan en una base SQLite local.",
+        "La IA es opcional y solo ve cifras agregadas, nunca nombres ni datos de contacto."
+      ],
+      "built": [
+        "Python",
+        "FastAPI",
+        "SQLite"
+      ]
+    },
     "Espectro": {
       "does": "El micrófono del computador escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para conservar el intercambio completo.",
       "points": [
