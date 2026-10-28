@@ -1,12 +1,12 @@
 {
-  "syncedAt": "2026-10-28T14:07:06.987Z",
+  "syncedAt": "2026-10-28T20:20:01.567Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 12,
-  "expectedCount": 12,
-  "fetchedCount": 20,
-  "publicRepos": 20,
+  "count": 13,
+  "expectedCount": 13,
+  "fetchedCount": 21,
+  "publicRepos": 21,
   "excludedCount": 8,
   "pagesFetched": 1,
   "repos": [
@@ -99,6 +99,21 @@
       "htmlUrl": "https://github.com/FernandoLizana/impulso",
       "pushedAt": "2026-10-02T02:57:17Z",
       "fileCount": 146
+    },
+    {
+      "id": 1437525628,
+      "name": "laboratorio-radar",
+      "description": null,
+      "language": "Python",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/laboratorio-radar",
+      "pushedAt": "2026-10-28T19:15:46Z",
+      "fileCount": 21
     },
     {
       "id": 1399164453,
