@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-10-28T20:20:01.567Z",
+  "syncedAt": "2026-10-29T14:28:17.257Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
@@ -10,21 +10,6 @@
   "excludedCount": 8,
   "pagesFetched": 1,
   "repos": [
-    {
-      "id": 1412635458,
-      "name": "bastardus",
-      "description": "AI-assisted formal math study lab (ChordWidth / PNPLab). Private until public release.",
-      "language": "Lean",
-      "topics": [],
-      "stargazersCount": 0,
-      "forksCount": 0,
-      "fork": false,
-      "archived": false,
-      "homepage": null,
-      "htmlUrl": "https://github.com/FernandoLizana/bastardus",
-      "pushedAt": "2026-10-10T03:14:46Z",
-      "fileCount": 643
-    },
     {
       "id": 1406395406,
       "name": "centralizado",
@@ -212,6 +197,21 @@
       "htmlUrl": "https://github.com/FernandoLizana/nexo-cerebro",
       "pushedAt": "2026-10-04T05:35:17Z",
       "fileCount": 1467
+    },
+    {
+      "id": 1412635458,
+      "name": "PNPLab",
+      "description": "AI-assisted formal math study lab (ChordWidth / PNPLab). Private until public release.",
+      "language": "Lean",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/PNPLab",
+      "pushedAt": "2026-10-10T03:14:46Z",
+      "fileCount": 643
     }
   ]
 }
