@@ -1,7 +1,14 @@
 {
-  "featured": ["Espectro", "limpieza", "impulso", "command-world", "loteria-lab", "navier-stokes-ai-lab", "centralizado", "mi-gestor", "mosca", "nexo-cerebro", "el-tejido-arcano", "laboratorio-radar"],
+  "featured": ["radio-dual-monitor", "safe-disk-cleaner", "impulso-frases", "questboard", "lottery-odds-lab", "navier-stokes-ai-lab", "code-art-showcase", "small-team-crm", "drosophila-3d", "nexus-nira-agents", "osm-lead-radar", "chordwidth-lab"],
   "projects": {
-    "laboratorio-radar": {
+    "chordwidth-lab": {
+      "does": "Estudio empírico de cómo trabajan modelos de IA sobre un problema matemático difícil: ChordWidth, evidencia computacional y formalización en Lean 4. No resuelve P versus NP.",
+      "points": [
+        "Separa lo verificado, lo formalizado y lo que sigue abierto."
+      ],
+      "built": ["Lean 4", "Python"]
+    },
+    "osm-lead-radar": {
       "does": "Laboratorio local de prospección: busca comercios publicados en OpenStreetMap, los guarda en SQLite y los mueve por un embudo de ventas con un tablero de cifras. No inventa fichas.",
       "points": [
         "Corre en el equipo. Los datos quedan en una base SQLite local.",
@@ -13,7 +20,7 @@
         "SQLite"
       ]
     },
-    "Espectro": {
+    "radio-dual-monitor": {
       "does": "El micrófono del computador escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para conservar el intercambio completo.",
       "points": [
         "Los dos lados del mensaje quedan registrados.",
@@ -22,7 +29,7 @@
       ],
       "built": ["Python", "PyAudio", "NumPy", "Flask"]
     },
-    "limpieza": {
+    "safe-disk-cleaner": {
       "does": "Revisa cachés y temporales conocidos en Windows y Linux, clasifica qué se puede regenerar y, por defecto, solo simula el borrado.",
       "points": [
         "Nada se borra hasta confirmarlo.",
@@ -31,7 +38,7 @@
       ],
       "built": ["Python", "biblioteca estándar"]
     },
-    "impulso": {
+    "impulso-frases": {
       "does": "Muestra una frase en español que se mantiene durante el día. Funciona sin cuenta, sin conexión y sin anuncios.",
       "points": [
         "El catálogo viaja dentro de la aplicación.",
@@ -40,11 +47,11 @@
       ],
       "built": ["Java", "Android"],
       "image": {
-        "src": "https://raw.githubusercontent.com/FernandoLizana/impulso/master/docs/capturas/explorar-claro.png",
+        "src": "https://raw.githubusercontent.com/FernandoLizana/impulso-frases/master/docs/capturas/explorar-claro.png",
         "alt": "Explorar el catálogo de Impulso por categoría"
       }
     },
-    "command-world": {
+    "questboard": {
       "does": "Tablero local para varios proyectos. El mapa muestra cada proyecto como un edificio, cada tarea como una misión y el dinero en una caja. Los datos quedan en SQLite, en el equipo.",
       "points": [
         "No hay cuenta en la nube ni telemetría.",
@@ -52,7 +59,7 @@
       ],
       "built": ["Python", "SQLite"]
     },
-    "loteria-lab": {
+    "lottery-odds-lab": {
       "does": "Laboratorio local de loterías: históricos, probabilidades, simulaciones y experimentos reproducibles. Incluye Kino y otros juegos. No predice el próximo sorteo.",
       "points": [
         "Corre en el equipo con Flask y SQLite, sin cuenta y sin telemetría.",
@@ -60,15 +67,15 @@
       ],
       "built": ["Python", "Flask", "SQLite"]
     },
-    "centralizado": {
-      "does": "Página portable que junta cuatro piezas. El arte y el desarrollo van en la misma superficie. No ejecuta esas obras: muestra una miniatura de cada una.",
+    "code-art-showcase": {
+      "does": "Página portable que junta tres piezas. El arte y el desarrollo van en la misma superficie. No ejecuta esas obras: muestra una miniatura de cada una.",
       "points": [
         "No tiene dependencias, ni cuentas, ni guarda datos.",
         "Se copia la carpeta y se abre."
       ],
       "built": ["JavaScript"]
     },
-    "mi-gestor": {
+    "small-team-crm": {
       "does": "CRM local para un equipo pequeño: a quién escribir, en qué etapa está cada oportunidad, qué hay que entregar y qué ventas quedaron registradas.",
       "points": [
         "La base es un archivo SQLite. No hace falta una cuenta externa.",
@@ -76,25 +83,18 @@
       ],
       "built": ["Python", "Flask", "SQLite"]
     },
-    "mosca": {
+    "drosophila-3d": {
       "does": "Laboratorio 3D en el navegador para explorar cómo una mosca de la fruta puede percibir un entorno y cómo un agente simple aprende. No es un simulador completo del cerebro.",
       "points": [
         "No pide cuentas ni guarda datos en la nube."
       ],
       "built": ["JavaScript"]
     },
-    "nexo-cerebro": {
+    "nexus-nira-agents": {
       "does": "Laboratorio local de agentes cognitivos. Nexus y Nira aprenden de forma distinta, en la máquina. No afirma consciencia, ni una inteligencia general, ni un servicio en la nube.",
       "points": [
         "Una asociación no se convierte sola en un hecho verificado.",
         "Los nodos externos son optativos y lo que llega de fuera entra en cuarentena."
-      ],
-      "built": ["Python"]
-    },
-    "el-tejido-arcano": {
-      "does": "Laboratorio de grafos de similitud simbólica: mide color, símbolos y semántica entre 22 imágenes simbólicas como una red. No es una herramienta de adivinación.",
-      "points": [
-        "Corre en el equipo. La comparación de texto, por defecto, no usa una API."
       ],
       "built": ["Python"]
     },
