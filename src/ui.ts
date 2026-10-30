@@ -225,13 +225,52 @@ export function mountUi(options: {
       featuredGrid.append(message)
       return
     }
-    for (const repo of shown) featuredGrid.append(featuredCard(repo))
+    // Algunas tarjetas ocupan dos columnas para que la última fila de tres quede completa,
+    // sin huecos y sin cambiar el orden.
+    let wideCount = (3 - (shown.length % 3)) % 3
+    if (wideCount === 0 && shown.length >= 9) wideCount = 3
+    const wide = new Set<number>()
+    const fits = (set: Set<number>) => {
+      let column = 0
+      for (let index = 0; index < shown.length; index += 1) {
+        const span = set.has(index) ? 2 : 1
+        if (column + span > 3) return false
+        column = (column + span) % 3
+      }
+      return true
+    }
+    const withImage = shown.findIndex((repo) => entryFor(editorial, repo)?.image)
+    const candidates = [withImage, 0, shown.length - 1, shown.length - 2, ...shown.keys()]
+    for (const index of candidates) {
+      if (wide.size >= wideCount) break
+      if (index < 0 || wide.has(index)) continue
+      wide.add(index)
+      if (!fits(wide)) wide.delete(index)
+    }
+    shown.forEach((repo, index) => featuredGrid.append(featuredCard(repo, index, wide.has(index))))
+    featuredGrid.dispatchEvent(new CustomEvent('cards'))
   }
 
-  function featuredCard(repo: Repo): HTMLElement {
+  function featuredCard(repo: Repo, index: number, wide: boolean): HTMLElement {
     const entry = entryFor(editorial, repo)
+    const language = repo.language ?? 'Sin lenguaje'
     const article = document.createElement('article')
-    article.className = 'featured-card'
+    article.className = wide ? 'featured-card is-wide reveal' : 'featured-card reveal'
+    article.style.setProperty('--accent', colorForLanguage(language))
+    article.style.setProperty('--delay', `${(index % 3) * 70}ms`)
+    const top = document.createElement('p')
+    top.className = 'fc-top'
+    const number = document.createElement('span')
+    number.className = 'fc-index'
+    number.textContent = String(index + 1).padStart(2, '0')
+    const lang = document.createElement('span')
+    lang.className = 'fc-lang'
+    const swatch = document.createElement('i')
+    swatch.className = 'swatch'
+    swatch.setAttribute('aria-hidden', 'true')
+    lang.append(swatch, document.createTextNode(language))
+    top.append(number, lang)
+    article.append(top)
     const heading = document.createElement('h3')
     heading.textContent = repo.name
     article.append(heading)
@@ -239,16 +278,29 @@ export function mountUi(options: {
     description.className = 'featured-copy'
     description.textContent = entry?.does ?? repo.description ?? 'Este repositorio no incluye descripción.'
     article.append(description)
-    const meta = document.createElement('p')
-    meta.className = 'quiet'
-    meta.textContent = [kindLabel(repo), repo.language ?? 'Sin lenguaje principal', fileLabel(repo.fileCount)].join(' · ')
-    article.append(meta)
     if (entry?.image) {
       const image = document.createElement('img')
       image.src = entry.image.src
       image.alt = entry.image.alt
+      image.loading = 'lazy'
       article.append(image)
     }
+    const built = entry?.built.length ? entry.built : repo.language ? [repo.language] : []
+    if (built.length) {
+      const stack = document.createElement('ul')
+      stack.className = 'fc-stack'
+      stack.setAttribute('aria-label', 'Construido con')
+      for (const item of built) {
+        const li = document.createElement('li')
+        li.textContent = item
+        stack.append(li)
+      }
+      article.append(stack)
+    }
+    const meta = document.createElement('p')
+    meta.className = 'quiet'
+    meta.textContent = [kindLabel(repo), fileLabel(repo.fileCount)].join(' · ')
+    article.append(meta)
     const actions = document.createElement('p')
     actions.className = 'featured-actions'
     const open = document.createElement('button')
@@ -259,7 +311,7 @@ export function mountUi(options: {
     const repoLink = document.createElement('a')
     repoLink.target = '_blank'
     repoLink.rel = 'noopener noreferrer'
-    externalLink(repoLink, repo.htmlUrl, 'Repositorio')
+    externalLink(repoLink, repo.htmlUrl, 'Repositorio ↗')
     actions.append(open, repoLink)
     article.append(actions)
     return article
@@ -386,6 +438,7 @@ export function mountUi(options: {
     openId = id
     const entry = entryFor(editorial, repo)
     detail.dataset.repoId = String(repo.id)
+    detail.style.setProperty('--accent', colorForLanguage(repo.language ?? 'Sin lenguaje'))
     detailKicker.textContent = kindLabel(repo)
     detailTitle.textContent = repo.name
     detailFlags.replaceChildren()

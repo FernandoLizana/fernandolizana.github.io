@@ -6,7 +6,7 @@
     <title>Fernando Lizana · Observatorio</title>
     <meta name="description" content="Construyo software. Automatizo su calidad. Ingeniería, QA automation y sistemas con IA.">
     <meta name="author" content="Fernando Lizana">
-    <meta name="theme-color" content="#070b14">
+    <meta name="theme-color" content="#04050b">
     <meta property="og:title" content="Fernando Lizana · Observatorio">
     <meta property="og:description" content="Construyo software. Automatizo su calidad.">
     <meta property="og:type" content="website">
@@ -14,35 +14,39 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,620&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/style.css">
   </head>
   <body>
     <a class="skip" href="#observatorio">Ir a los proyectos</a>
     <header class="nav">
-      <a class="brand" href="#inicio">Fernando Lizana</a>
+      <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"></span>Fernando Lizana</a>
       <nav aria-label="Secciones">
-        <a href="#observatorio">Proyectos</a>
+        <a href="#destacados">Proyectos</a>
+        <a href="#areas">Oficio</a>
         <a href="#sobre">Sobre mí</a>
-        <a href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="nav-cta" href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
 
     <main>
       <section class="hero" id="inicio">
         <div class="hero-copy">
-          <p class="kicker">Ingeniería · QA Automation · Sistemas con IA</p>
-          <h1>Construyo software. <span>Automatizo su calidad.</span></h1>
-          <p class="lede">Cada estrella es un repositorio público. La galaxia sirve para encontrarlos; la lista y las fichas explican qué hacen, con qué están hechos y dónde está el código.</p>
+          <p class="kicker hero-kicker"><span class="pulse" aria-hidden="true"></span><span id="hero-count">Proyectos en órbita</span></p>
+          <h1>
+            <span class="line"><span class="word" style="--i:0">Construyo</span> <span class="word" style="--i:1">software.</span></span>
+            <span class="line glow"><span class="word" style="--i:2">Automatizo</span> <span class="word" style="--i:3">su</span> <span class="word" style="--i:4">calidad.</span></span>
+          </h1>
+          <p class="lede">Ingeniería, QA automation y sistemas con IA. Cada estrella de esta galaxia es un repositorio público: gíralo, búscalo y abre su ficha.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#observatorio">Explorar proyectos</a>
-            <a class="btn btn-ghost" href="#destacados">Ver proyectos destacados</a>
+            <a class="btn btn-primary" href="#destacados">Ver proyectos <span aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-
         <div class="stage" id="observatorio">
           <div class="stage-frame">
           <canvas id="galaxy" aria-hidden="true"></canvas>
+          <div class="stage-veil" aria-hidden="true"></div>
           <div id="star-labels" class="star-labels"></div>
           <p id="hover-label" class="hover-label" role="tooltip" hidden></p>
           <p id="empty" class="empty" hidden></p>
@@ -58,7 +62,7 @@
           <div class="dock">
             <div class="search">
               <label class="sr" for="q">Buscar por nombre, descripción o topics</label>
-              <input id="q" type="search" placeholder="Buscar proyectos" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results">
+              <input id="q" type="search" placeholder="Buscar en la galaxia…" autocomplete="off" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-results">
               <ul id="search-results" role="listbox" hidden></ul>
             </div>
             <div class="dock-tools">
@@ -97,7 +101,7 @@
                   <div id="legend-body"></div>
                   <p>Arrastra para girar. En un teléfono, pellizca para acercar. La rueda del mouse sigue desplazando la página.</p>
                   <p>El color es el lenguaje principal. Una línea une repositorios con el mismo lenguaje: es una agrupación, no una dependencia.</p>
-                  <p>La vista es desde la cabina. Al elegir un proyecto, la nave se acerca a ese planeta. El tamaño es proporcional a la cantidad de archivos del repositorio.</p>
+                  <p>Al elegir un proyecto, la cámara viaja hasta esa estrella. El tamaño es proporcional a la cantidad de archivos del repositorio.</p>
                   <p>El disco dorado, naranja y azul es el cielo, no una lista de repositorios. Solo las estrellas con nombre son proyectos. Un anillo marca una bifurcación; menos brillo, un repositorio archivado.</p>
                   <p id="coverage"></p>
                 </div>
@@ -108,53 +112,69 @@
             </div>
           </div>
         </div>
+
+        <a class="scroll-cue" href="#cifras" aria-label="Bajar a las cifras"><span></span></a>
       </section>
 
+      <section class="stats" id="cifras" aria-label="Cifras">
+        <div class="stat reveal"><strong data-stat="repos">0</strong><span>proyectos públicos</span></div>
+        <div class="stat reveal"><strong data-stat="files">0</strong><span>archivos versionados</span></div>
+        <div class="stat reveal"><strong data-stat="languages">0</strong><span>lenguajes principales</span></div>
+        <div class="stat reveal"><strong data-stat="topics">0</strong><span>temas distintos</span></div>
+      </section>
+
+      <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
       <section class="band" id="destacados">
-        <div class="band-head">
+        <div class="band-head reveal">
           <p class="kicker">Selección</p>
-          <h2>Proyectos destacados</h2>
-          <p>Cada tarjeta usa el mismo orden: nombre, qué hace y enlaces. La imagen solo aparece si el repositorio ya trae una captura.</p>
+          <h2>Proyectos <em>destacados</em></h2>
+          <p>Herramientas locales, laboratorios de investigación y aplicaciones. Cada ficha dice qué hace, con qué está hecho y qué no promete.</p>
         </div>
         <div id="featured-grid" class="featured-grid"></div>
       </section>
 
       <section class="band" id="areas" aria-labelledby="areas-title">
-        <div class="band-head">
+        <div class="band-head reveal">
           <p class="kicker">Oficio</p>
-          <h2 id="areas-title">Áreas de trabajo</h2>
+          <h2 id="areas-title">Áreas de <em>trabajo</em></h2>
         </div>
         <div class="area-grid">
-          <article>
+          <article class="reveal">
+            <span class="area-num">01</span>
             <h3>QA y automatización</h3>
-            <p>Diseño comprobaciones y herramientas que muestran qué van a hacer antes de actuar. limpieza clasifica destinos regenerables y, por defecto, solo simula el borrado.</p>
+            <p>Diseño comprobaciones y herramientas que muestran qué van a hacer antes de actuar. safe-disk-cleaner clasifica destinos regenerables y, por defecto, solo simula el borrado.</p>
           </article>
-          <article>
+          <article class="reveal">
+            <span class="area-num">02</span>
             <h3>Monitoreo y confiabilidad</h3>
-            <p>Espectro escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para revisar el intercambio completo.</p>
+            <p>radio-dual-monitor escucha la salida de un transmisor de radio y guarda el envío y la recepción por separado, para revisar el intercambio completo.</p>
           </article>
-          <article>
+          <article class="reveal">
+            <span class="area-num">03</span>
             <h3>Aplicaciones e IA</h3>
-            <p>Impulso es una aplicación Android de frases en español, sin cuenta y sin conexión. navier-stokes-ai-lab reúne experimentos numéricos de Navier-Stokes con ayuda de IA y no afirma una solución del problema del milenio.</p>
+            <p>Impulso es una aplicación Android de frases en español, sin cuenta y sin conexión. navier-stokes-ai-lab reúne experimentos numéricos con ayuda de IA y no afirma una solución del problema del milenio.</p>
           </article>
         </div>
       </section>
 
       <section class="band about" id="sobre">
-        <div>
+        <div class="reveal">
           <p class="kicker">Sobre mí</p>
-          <h2>Fernando Lizana</h2>
-          <p>Soy ingeniero en telecomunicaciones. Trabajo en QA y automatización, en monitoreo y en sistemas con inteligencia artificial. Me interesa que una herramienta explique qué va a hacer y que se pueda comprobar.</p>
+          <blockquote class="statement">Me interesa que una herramienta <em>explique qué va a hacer</em> y que se pueda <em>comprobar</em>.</blockquote>
+          <p>Soy Fernando Lizana, ingeniero en telecomunicaciones. Trabajo en QA y automatización, en monitoreo y en sistemas con inteligencia artificial.</p>
         </div>
-        <div class="contact" id="contacto">
+        <div class="contact reveal" id="contacto">
           <h3>Contacto</h3>
+          <p>El código, los avances y las conversaciones viven en GitHub.</p>
           <ul>
-            <li><a href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a class="btn btn-primary btn-big" href="https://github.com/FernandoLizana" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></li>
           </ul>
         </div>
       </section>
 
       <footer class="colophon">
+        <p class="colophon-name">Fernando Lizana</p>
         <p id="sync">Sincronización pendiente.</p>
       </footer>
     </main>

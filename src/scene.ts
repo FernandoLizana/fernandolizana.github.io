@@ -1,5 +1,9 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { buildStarLayout, colorForLanguage, constellationPairs, frameHome, planetRadius } from './groups.ts'
 import type { Repo } from './types.ts'
 
@@ -38,7 +42,11 @@ type Quality = {
   pixelRatio: number
   antialias: boolean
   starScale: number
+  bloom: boolean
 }
+
+/** Desplazamiento del centro de la escena, en fracciones del ancho y del alto del lienzo. */
+export type Framing = { x: number; y: number }
 
 type StarRecord = {
   id: number
@@ -74,6 +82,7 @@ function detectQuality(): Quality {
     pixelRatio: Math.min(window.devicePixelRatio || 1, low ? 1.25 : 1.6),
     antialias: !low,
     starScale: coarse ? 1.38 : 1,
+    bloom: !low,
   }
 }
 
@@ -175,6 +184,8 @@ export function createScene(options: {
   repos: Repo[]
   featuredIds: readonly number[]
   motion: boolean
+  framing?: (selected: boolean, width: number, height: number) => Framing
+  zoom?: (width: number, height: number) => number
   onHover: (hit: HoverHit | null) => void
   onSelect: (id: number) => void
   onLabels: (labels: SceneLabel[]) => void
@@ -247,10 +258,19 @@ export function createScene(options: {
   decor.rotation.x = 0.58
 
   const featured = new Set(options.featuredIds)
-  const cockpit = createCockpit()
   const warp = createWarp(quality.dust > 8000 ? 170 : 80)
-  camera.add(cockpit, warp)
+  camera.add(warp)
   scene.add(camera)
+
+  let composer: EffectComposer | null = null
+  let bloom: UnrealBloomPass | null = null
+  if (quality.bloom) {
+    composer = new EffectComposer(renderer)
+    composer.addPass(new RenderPass(scene, camera))
+    bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.85, 0.55, 0.18)
+    composer.addPass(bloom)
+    composer.addPass(new OutputPass())
+  }
 
   const layouts = buildStarLayout(options.repos)
   const maxFiles = Math.max(1, ...options.repos.map((repo) => repo.fileCount))
@@ -338,6 +358,9 @@ export function createScene(options: {
   })))
   const homePos = new THREE.Vector3(framed.position.x, framed.position.y, framed.position.z)
   const homeTarget = new THREE.Vector3(framed.target.x, framed.target.y, framed.target.z)
+  // La distancia de inicio depende de cuánto lienzo queda libre para la galaxia.
+  const zoom = options.zoom?.(options.canvas.clientWidth || 1, options.canvas.clientHeight || 1) ?? 1
+  homePos.sub(homeTarget).multiplyScalar(zoom).add(homeTarget)
   decor.position.copy(homeTarget)
   camera.position.copy(homePos)
   controls.target.copy(homeTarget)
@@ -370,14 +393,37 @@ export function createScene(options: {
   const pointers = new Set<number>()
   let origin: { x: number; y: number } | null = null
   let moved = false
+  let onScreen = true
+  const shift = { x: 0, y: 0 }
+
+  function wantedShift(): Framing {
+    const width = options.canvas.clientWidth || window.innerWidth
+    const height = options.canvas.clientHeight || window.innerHeight
+    return options.framing?.(selectedId !== null, width, height) ?? { x: 0, y: 0 }
+  }
+
+  function applyShift() {
+    const width = options.canvas.clientWidth || window.innerWidth
+    const height = options.canvas.clientHeight || window.innerHeight
+    if (Math.abs(shift.x) < 1e-4 && Math.abs(shift.y) < 1e-4) {
+      camera.clearViewOffset()
+      return
+    }
+    camera.setViewOffset(width, height, -shift.x * width, -shift.y * height, width, height)
+  }
 
   function resize() {
     const width = options.canvas.clientWidth || window.innerWidth
     const height = options.canvas.clientHeight || window.innerHeight
     renderer.setSize(width, height, false)
+    composer?.setPixelRatio(quality.pixelRatio)
+    composer?.setSize(width, height)
     camera.aspect = width / Math.max(height, 1)
+    const wanted = wantedShift()
+    shift.x = wanted.x
+    shift.y = wanted.y
+    applyShift()
     camera.updateProjectionMatrix()
-    fitCockpit(cockpit, camera)
   }
 
   function applyScale() {
@@ -439,7 +485,7 @@ export function createScene(options: {
     lines.geometry = lineGeometry
   }
 
-  function flyTo(position: THREE.Vector3, target: THREE.Vector3, animate: boolean): number {
+  function flyTo(position: THREE.Vector3, target: THREE.Vector3, animate: boolean, fixed?: number): number {
     if (!animate) {
       flight = null
       camera.up.set(0, 1, 0)
@@ -452,7 +498,7 @@ export function createScene(options: {
     }
     const fromPos = camera.position.clone()
     const travel = fromPos.distanceTo(position)
-    const duration = Math.min(2800, Math.max(1200, travel * 24))
+    const duration = fixed ?? Math.min(2800, Math.max(1200, travel * 24))
     const control = fromPos.clone().lerp(position, 0.42)
     const side = new THREE.Vector3().crossVectors(position.clone().sub(fromPos), new THREE.Vector3(0, 1, 0))
     if (side.lengthSq() < 1e-4) side.set(1, 0, 0)
@@ -586,11 +632,12 @@ export function createScene(options: {
 
   function render(now: number) {
     const delta = Math.min(clock.getDelta(), 0.05)
-    if (motion && !flight) {
-      const bob = Math.sin(now * 0.0013) * 0.004
-      cockpit.position.y = bob
-    } else {
-      cockpit.position.y = 0
+    const wanted = wantedShift()
+    const ease = motion ? Math.min(1, delta * 3.2) : 1
+    if (Math.abs(wanted.x - shift.x) > 1e-4 || Math.abs(wanted.y - shift.y) > 1e-4) {
+      shift.x += (wanted.x - shift.x) * ease
+      shift.y += (wanted.y - shift.y) * ease
+      applyShift()
     }
     if (motion) spin += delta * 0.055
     decor.rotation.y = spin
@@ -604,9 +651,11 @@ export function createScene(options: {
       const pulse = 1 + Math.sin(now * 0.0011) * 0.08
       for (const sprite of coreGlow) sprite.material.opacity *= pulse
     }
+    if (bloom) bloom.strength = selectedId !== null ? 0.55 : 0.85
     publishLabels()
     if (hoveredId !== null) publishHover()
-    renderer.render(scene, camera)
+    if (composer) composer.render(delta)
+    else renderer.render(scene, camera)
   }
 
   function publishLabels() {
@@ -634,7 +683,7 @@ export function createScene(options: {
   }
 
   function start() {
-    if (paused || hidden) return
+    if (paused || hidden || !onScreen) return
     cancelAnimationFrame(frame)
     clock.getDelta()
     frame = window.requestAnimationFrame(loop)
@@ -659,6 +708,21 @@ export function createScene(options: {
 
   resize()
   rebuildLines(new Set(options.repos.map((repo) => repo.id)))
+  if (options.motion) {
+    // Entrada: la nave llega desde lejos hasta la vista de inicio.
+    const away = homePos.clone().sub(homeTarget)
+    away.applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.9)
+    camera.position.copy(homeTarget).addScaledVector(away, 2.6)
+    camera.position.y += 30
+    camera.lookAt(homeTarget)
+    flyTo(homePos.clone(), homeTarget.clone(), true, 3600)
+  }
+  const watcher = new IntersectionObserver((entries) => {
+    onScreen = entries.some((entry) => entry.isIntersecting)
+    if (onScreen) start()
+    else stop()
+  })
+  watcher.observe(options.canvas)
   window.addEventListener('resize', resize)
   document.addEventListener('visibilitychange', onVisibility)
   options.canvas.addEventListener('pointerdown', onPointerDown)
@@ -722,7 +786,9 @@ export function createScene(options: {
       stop()
       window.removeEventListener('resize', resize)
       document.removeEventListener('visibilitychange', onVisibility)
+      watcher.disconnect()
       controls.dispose()
+      composer?.dispose()
       renderer.dispose()
     },
   }
@@ -736,70 +802,6 @@ function approachPosition(from: THREE.Vector3, planet: THREE.Vector3, radius: nu
   const position = planet.clone().addScaledVector(away, gap)
   position.y += gap * 0.06
   return position
-}
-
-function canopyMaterial(color: number, opacity = 1): THREE.MeshBasicMaterial {
-  const material = new THREE.MeshBasicMaterial({
-    color,
-    transparent: true,
-    opacity,
-    depthTest: false,
-    depthWrite: false,
-  })
-  return material
-}
-
-function canopyBar(group: THREE.Group, material: THREE.Material): THREE.Mesh {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material)
-  mesh.frustumCulled = false
-  mesh.renderOrder = 20
-  group.add(mesh)
-  return mesh
-}
-
-function createCockpit(): THREE.Group {
-  const group = new THREE.Group()
-  const frame = canopyMaterial(0x162033)
-  const lip = canopyMaterial(0xffd7a1, 0.92)
-  const lamp = canopyMaterial(0xfff1d6)
-  const meshes = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, frame))
-  const lips = ['left', 'right', 'top', 'bottom'].map(() => canopyBar(group, lip))
-  const lamps = [0, 1, 2, 3, 4].map(() => canopyBar(group, lamp))
-  group.userData = { meshes, lips, lamps }
-  return group
-}
-
-function fitCockpit(group: THREE.Group, camera: THREE.PerspectiveCamera) {
-  const meshes = group.userData.meshes as THREE.Mesh[]
-  const lips = group.userData.lips as THREE.Mesh[]
-  const lamps = group.userData.lamps as THREE.Mesh[]
-  const [left, right, top, bottom] = meshes
-  const [lipLeft, lipRight, lipTop, lipBottom] = lips
-  const z = -0.84
-  const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.abs(z)
-  const halfW = halfH * camera.aspect
-  const thickness = Math.max(halfH, halfW) * 0.2
-  const lipSize = thickness * 0.08
-  left.position.set(-halfW + thickness * 0.42, 0, z)
-  left.scale.set(thickness, halfH * 2.05, 0.02)
-  right.position.set(halfW - thickness * 0.42, 0, z)
-  right.scale.set(thickness, halfH * 2.05, 0.02)
-  top.position.set(0, halfH - thickness * 0.28, z)
-  top.scale.set(halfW * 2.05, thickness * 0.7, 0.02)
-  bottom.position.set(0, -halfH + thickness * 0.72, z)
-  bottom.scale.set(halfW * 2.05, thickness * 1.7, 0.02)
-  lipLeft.position.set(-halfW + thickness * 0.9, 0, z + 0.01)
-  lipLeft.scale.set(lipSize, halfH * 1.7, 0.01)
-  lipRight.position.set(halfW - thickness * 0.9, 0, z + 0.01)
-  lipRight.scale.set(lipSize, halfH * 1.7, 0.01)
-  lipTop.position.set(0, halfH - thickness * 0.62, z + 0.01)
-  lipTop.scale.set(halfW * 1.7, lipSize, 0.01)
-  lipBottom.position.set(0, -halfH + thickness * 1.52, z + 0.01)
-  lipBottom.scale.set(halfW * 1.7, lipSize, 0.01)
-  lamps.forEach((item, index) => {
-    item.position.set((index - 2) * thickness * 0.85, -halfH + thickness * 0.72, z + 0.02)
-    item.scale.set(thickness * 0.28, thickness * 0.07, 0.01)
-  })
 }
 
 function createWarp(count: number): THREE.LineSegments {
