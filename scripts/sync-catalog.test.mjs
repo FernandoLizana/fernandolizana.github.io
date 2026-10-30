@@ -17,7 +17,7 @@ function repo(id, extra = {}) {
     forks_count: 0,
     fork: id % 4 === 0,
     archived: id % 9 === 0,
-    homepage: id === 2 ? 'no-es-url' : id === 3 ? 'https://digitalriderspa.com/demo' : '',
+    homepage: id === 2 ? 'no-es-url' : id === 3 ? 'https://example.com/demo' : '',
     html_url: `https://github.com/FernandoLizana/repo-${id}`,
     pushed_at: '2024-05-06T07:08:09Z',
     ...extra,
@@ -86,7 +86,7 @@ test('pagina más de 100 repositorios y conserva fork, archivado y homepage', as
   assert.equal(catalog.complete, true)
   assert.equal(JSON.stringify(catalog).includes('ghp_'), false)
   assert.equal(catalog.repos.find((item) => item.id === 2).homepage, null)
-  assert.equal(catalog.repos.find((item) => item.id === 3).homepage, 'https://digitalriderspa.com/demo')
+  assert.equal(catalog.repos.find((item) => item.id === 3).homepage, 'https://example.com/demo')
   assert.equal(catalog.repos.find((item) => item.id === 4).fork, true)
   assert.equal(catalog.repos.find((item) => item.id === 9).archived, true)
   assert.equal(catalog.repos.find((item) => item.id === 3).language, null)
