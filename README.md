@@ -32,7 +32,7 @@ Los recursos usan rutas relativas. En el repositorio:
 
 ## Perfil de GitHub
 
-El perfil público está en [FernandoLizana/FernandoLizana](https://github.com/FernandoLizana/FernandoLizana), con el banner y el enlace al portafolio. La biografía y [digitalriderspa.com](https://digitalriderspa.com/) se mantienen en esa presentación. Las copias de trabajo viven en `profile/`.
+El perfil público está en [FernandoLizana/FernandoLizana](https://github.com/FernandoLizana/FernandoLizana), con el banner y el enlace al portafolio. La biografía y el enlace al portafolio se mantienen en esa presentación. Las copias de trabajo viven en `profile/`.
 
 ## Qué se comprueba
 

@@ -202,7 +202,7 @@ if (!edge) {
 
     const search = await cdp.evaluate(`(() => {
       const input = document.querySelector('#q')
-      input.value = 'leucode'
+      input.value = 'mosca'
       input.dispatchEvent(new Event('input', { bubbles: true }))
       const option = document.querySelector('#search-results [role="option"]')
       option?.click()

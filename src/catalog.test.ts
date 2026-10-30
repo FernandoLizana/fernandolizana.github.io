@@ -13,7 +13,7 @@ import type { Catalog, Repo } from './types.ts'
 function repo(overrides: Partial<Repo> = {}): Repo {
   return {
     id: 1,
-    name: 'leucode',
+    name: 'repo-de-prueba',
     description: 'Monitor de servicios',
     language: 'JavaScript',
     topics: ['observabilidad', 'agentes'],
@@ -22,7 +22,7 @@ function repo(overrides: Partial<Repo> = {}): Repo {
     fork: false,
     archived: false,
     homepage: null,
-    htmlUrl: 'https://github.com/FernandoLizana/leucode',
+    htmlUrl: 'https://github.com/FernandoLizana/repo-de-prueba',
     pushedAt: '2026-04-11T16:43:43Z',
     fileCount: 4,
     ...overrides,
@@ -46,7 +46,7 @@ function catalog(repos: Repo[]): Catalog {
 }
 
 test('acepta una URL http o https y rechaza el resto', () => {
-  assert.equal(isHttpUrl('https://digitalriderspa.com/'), true)
+  assert.equal(isHttpUrl('https://example.com/'), true)
   assert.equal(isHttpUrl('notaurl'), false)
   assert.equal(isHttpUrl(''), false)
   assert.equal(isHttpUrl(null), false)
@@ -54,7 +54,7 @@ test('acepta una URL http o https y rechaza el resto', () => {
 
 test('la búsqueda usa nombre, descripción y topics', () => {
   const state = initialFilters([repo()])
-  assert.equal(matchesRepo(repo(), { ...state, query: 'leuco' }), true)
+  assert.equal(matchesRepo(repo(), { ...state, query: 'de-prue' }), true)
   assert.equal(matchesRepo(repo(), { ...state, query: 'servicios' }), true)
   assert.equal(matchesRepo(repo(), { ...state, query: 'observabilidad' }), true)
   assert.equal(matchesRepo(repo(), { ...state, query: 'JavaScript' }), false)

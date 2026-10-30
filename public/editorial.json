@@ -92,7 +92,7 @@
       "built": ["Python"]
     },
     "el-tejido-arcano": {
-      "does": "Laboratorio local para explorar relaciones entre los 22 arcanos mayores, con color, símbolos y grafos. No predice el futuro ni da consejo médico, legal o financiero.",
+      "does": "Laboratorio de grafos de similitud simbólica: mide color, símbolos y semántica entre 22 imágenes simbólicas como una red. No es una herramienta de adivinación.",
       "points": [
         "Corre en el equipo. La comparación de texto, por defecto, no usa una API."
       ],
