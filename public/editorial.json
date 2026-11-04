@@ -1,6 +1,15 @@
 {
-  "featured": ["radio-dual-monitor", "safe-disk-cleaner", "impulso-frases", "questboard", "lottery-odds-lab", "navier-stokes-ai-lab", "code-art-showcase", "small-team-crm", "drosophila-3d", "nexus-nira-agents", "osm-lead-radar", "chordwidth-lab"],
+  "featured": ["radio-dual-monitor", "safe-disk-cleaner", "impulso-frases", "questboard", "lottery-odds-lab", "navier-stokes-ai-lab", "code-art-showcase", "small-team-crm", "drosophila-3d", "nexus-nira-agents", "osm-lead-radar", "chordwidth-lab", "bastardus"],
   "projects": {
+    "bastardus": {
+      "does": "Modelo de lenguaje local en español rioplatense: Qwen3-4B abliterado, sin el sesgo de rechazo en los pesos, y afinado con una personalidad propia, seca y directa. Corre en Ollama con una GPU de 6 GB.",
+      "points": [
+        "Pipeline reproducible y reanudable: base, abliteración con Heretic, control de daño, LoRA de personalidad, cuantización y empaquetado.",
+        "Batería propia de 40 tareas sin caídas frente a la base. Q4_K_M de 2.4 GB a +0.94% de perplejidad.",
+        "El dataset de personalidad excluye contenido de daño. Pesos GGUF en Hugging Face."
+      ],
+      "built": ["Python", "Unsloth", "llama.cpp", "Ollama"]
+    },
     "chordwidth-lab": {
       "does": "Estudio empírico de cómo trabajan modelos de IA sobre un problema matemático difícil: ChordWidth, evidencia computacional y formalización en Lean 4. No resuelve P versus NP.",
       "points": [
