@@ -25,6 +25,7 @@ Ingeniero en Telecomunicaciones. Construyo software y automatizo su calidad.
 - [osm-lead-radar](https://github.com/FernandoLizana/osm-lead-radar) — prospección local de comercios publicados en OpenStreetMap. No inventa fichas. La IA es opcional y no ve datos de contacto.
 - [drosophila-3d](https://github.com/FernandoLizana/drosophila-3d) — laboratorio 3D de percepción y aprendizaje de una mosca de la fruta. No simula un cerebro completo.
 - [nexus-nira-agents](https://github.com/FernandoLizana/nexus-nira-agents) — laboratorio local de agentes. Nexus y Nira, en el equipo.
+- [bastardus](https://github.com/FernandoLizana/bastardus) — modelo de lenguaje local en español rioplatense, abliterado y con personalidad propia. Pipeline reproducible sobre Qwen3-4B, corre en Ollama.
 
 [Explorar los proyectos](https://fernandolizana.github.io/)
 
