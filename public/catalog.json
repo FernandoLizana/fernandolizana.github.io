@@ -1,15 +1,39 @@
 {
-  "syncedAt": "2026-11-04T15:31:55.940Z",
+  "syncedAt": "2026-11-04T17:11:44.762Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 13,
-  "expectedCount": 13,
-  "fetchedCount": 18,
-  "publicRepos": 18,
+  "count": 14,
+  "expectedCount": 14,
+  "fetchedCount": 19,
+  "publicRepos": 19,
   "excludedCount": 5,
   "pagesFetched": 1,
   "repos": [
+    {
+      "id": 1445849361,
+      "name": "bastardus",
+      "description": "LLM local en español rioplatense: Qwen3-4B abliterado y afinado con personalidad propia. Pipeline reproducible, corre en Ollama.",
+      "language": "Shell",
+      "topics": [
+        "abliteration",
+        "gguf",
+        "llm",
+        "local-ai",
+        "lora",
+        "ollama",
+        "qwen3",
+        "spanish"
+      ],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": "https://huggingface.co/FernandoLizana/bastardus",
+      "htmlUrl": "https://github.com/FernandoLizana/bastardus",
+      "pushedAt": "2026-11-04T15:33:38Z",
+      "fileCount": 29
+    },
     {
       "id": 1412635458,
       "name": "chordwidth-lab",
@@ -149,8 +173,8 @@
       "archived": false,
       "homepage": null,
       "htmlUrl": "https://github.com/FernandoLizana/necro-oracle",
-      "pushedAt": "2026-11-04T13:38:19Z",
-      "fileCount": 176
+      "pushedAt": "2026-11-04T16:34:16Z",
+      "fileCount": 294
     },
     {
       "id": 1403831763,
