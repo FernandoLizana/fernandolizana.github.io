@@ -1,12 +1,12 @@
 {
-  "syncedAt": "2026-11-03T17:33:39.648Z",
+  "syncedAt": "2026-11-04T15:31:55.940Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 12,
-  "expectedCount": 12,
-  "fetchedCount": 17,
-  "publicRepos": 17,
+  "count": 13,
+  "expectedCount": 13,
+  "fetchedCount": 18,
+  "publicRepos": 18,
   "excludedCount": 5,
   "pagesFetched": 1,
   "repos": [
@@ -136,6 +136,21 @@
       "htmlUrl": "https://github.com/FernandoLizana/navier-stokes-ai-lab",
       "pushedAt": "2026-10-30T17:11:04Z",
       "fileCount": 1068
+    },
+    {
+      "id": 1444970140,
+      "name": "necro-oracle",
+      "description": null,
+      "language": "TypeScript",
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/necro-oracle",
+      "pushedAt": "2026-11-04T13:38:19Z",
+      "fileCount": 176
     },
     {
       "id": 1403831763,
