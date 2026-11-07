@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-11-06T15:10:05.822Z",
+  "syncedAt": "2026-11-07T14:09:16.748Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
@@ -171,10 +171,10 @@
       "forksCount": 0,
       "fork": false,
       "archived": false,
-      "homepage": null,
+      "homepage": "https://necro-oracle.vercel.app/",
       "htmlUrl": "https://github.com/FernandoLizana/necro-oracle",
-      "pushedAt": "2026-11-06T13:58:20Z",
-      "fileCount": 590
+      "pushedAt": "2026-11-07T05:54:35Z",
+      "fileCount": 739
     },
     {
       "id": 1403831763,
