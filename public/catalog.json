@@ -1,12 +1,12 @@
 {
-  "syncedAt": "2026-11-27T17:31:25.856Z",
+  "syncedAt": "2026-11-28T16:15:24.627Z",
   "owner": "FernandoLizana",
   "source": "https://api.github.com/users/FernandoLizana/repos?type=owner&per_page=100",
   "complete": true,
-  "count": 14,
-  "expectedCount": 14,
-  "fetchedCount": 19,
-  "publicRepos": 19,
+  "count": 15,
+  "expectedCount": 15,
+  "fetchedCount": 20,
+  "publicRepos": 20,
   "excludedCount": 5,
   "pagesFetched": 1,
   "repos": [
@@ -137,6 +137,21 @@
       "htmlUrl": "https://github.com/FernandoLizana/lottery-odds-lab",
       "pushedAt": "2026-11-27T14:20:11Z",
       "fileCount": 149
+    },
+    {
+      "id": 1474742422,
+      "name": "mantenimente-reels",
+      "description": "Archivos públicos de Reels de ManteniMente para programación en Buffer",
+      "language": null,
+      "topics": [],
+      "stargazersCount": 0,
+      "forksCount": 0,
+      "fork": false,
+      "archived": false,
+      "homepage": null,
+      "htmlUrl": "https://github.com/FernandoLizana/mantenimente-reels",
+      "pushedAt": "2026-11-27T17:49:04Z",
+      "fileCount": 1
     },
     {
       "id": 1402625285,
